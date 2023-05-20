@@ -1,6 +1,6 @@
 <script setup>
 import AppAside from "@/components/AppAside.vue";
-
+import AppMain from "@/components/AppMain.vue";
 
 </script>
 
@@ -9,8 +9,8 @@ import AppAside from "@/components/AppAside.vue";
     <el-container>
       <AppAside />
       <el-container>
-        <el-header >Header</el-header>
-        <el-main>Main</el-main>
+        <el-header ></el-header>
+        <AppMain />
       </el-container>
     </el-container>
   </el-container>
