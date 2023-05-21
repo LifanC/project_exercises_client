@@ -5,14 +5,16 @@ import PubSub from "pubsub-js";
 
 const tableData = ref()
 
-PubSub.subscribe('transfer', function (msg, data) {
+const token =  PubSub.subscribe('transfer', function (msg, data) {
   tableData.value = data
+  // PubSub.unsubscribe(token)
 });
+
 
 </script>
 
 <template>
-  <el-table :data="tableData" height="500px" style="width: 100%">
+  <el-table :data="tableData" height="250px" style="width: 100%">
     <el-table-column
         prop=""
         label="幣別名稱"
