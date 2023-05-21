@@ -3,7 +3,7 @@
 import {Pointer, CaretBottom, Search, Refresh} from "@element-plus/icons-vue";
 import PubSub from 'pubsub-js'
 import axios from "axios";
-import {reactive, ref} from "vue";
+import {ref} from "vue";
 
 function getList() {
   axios.get('http://localhost:8080/getAll')
@@ -19,20 +19,22 @@ function getList() {
       }).catch((error) => {
     console.log('error', error)
   })
-
 }
 
 getList()
 
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
+  const x = [key,true]
+  PubSub.publish('main',x)
 }
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
+  const x = [key,false]
+  PubSub.publish('main',x)
 }
 
 function rateSubmit() {
-  // 發布消息(消息關鍵字, 要傳遞的資料)
   axios.get('https://api.exchangerate-api.com/v4/latest/TWD')
       .then((response) => {
         axios({
@@ -64,13 +66,13 @@ function rateSubmit() {
 
 }
 
-const fromData = reactive({
-  v: 0
-})
-
-console.log('fromData', fromData.v)
-fromData.v++
-console.log('fromData', fromData.v)
+// const fromData = reactive({
+//   v: 0
+// })
+//
+// console.log('fromData', fromData.v)
+// fromData.v++
+// console.log('fromData', fromData.v)
 
 const rateName = ref('')
 const nation = ref('')
@@ -80,6 +82,7 @@ const tableData = ref()
 const tableDataName = ref()
 
 function inquiry() {
+  getNationName()
   axios.get('http://localhost:8080/getOnly', {
     params: {
       curField: rateName.value
@@ -93,7 +96,7 @@ function inquiry() {
       })
 }
 
-function getNationName(){
+function getNationName() {
   axios.get('http://localhost:8080/getNationName', {
     params: {
       curField: rateName.value
@@ -124,7 +127,7 @@ function getNationName(){
           <el-icon>
             <CaretBottom/>
           </el-icon>
-          查詢匯率
+          訂票管理
         </template>
         <el-menu-item index="1-1">
           <el-button
@@ -136,34 +139,29 @@ function getNationName(){
           </el-button>
         </el-menu-item>
         <el-menu-item index="1-2">
-          <el-select v-model="rateName" size="large" placeholder="請選擇" filterable>
+          <el-select v-model="rateName" size="large" placeholder="請選擇幣別" filterable>
             <el-option
                 v-for="item in tableDataName"
                 :key="item.currency"
                 :label="item.currency +' '+ item.currencyName"
                 :value="item.currency"
-                @click="getNationName"
+                @click="inquiry"
             />
           </el-select>
         </el-menu-item>
-        <el-menu-item index="1-2">
+        <el-menu-item index="1-3">
           <el-text>查詢幣別</el-text>
           &emsp;
-          <el-button
-              type="primary"
-              :icon="Search"
-              @click="inquiry"
-          />
-          &emsp;
-          <el-text>重整</el-text>
-          &emsp;
-          <el-button
-              :icon="Refresh"
-              @click="getList"
-          />
+          <el-button-group>
+            <el-button
+                :icon="Refresh"
+                @click="getList"
+            />
+          </el-button-group>
         </el-menu-item>
+
         <el-menu-item index="1-3">
-          <el-select v-model="nation" size="large" placeholder="使用的國家">
+          <el-select v-model="nation" size="large" placeholder="查詢使用的國家">
             <el-option
                 v-for="item in nationName"
                 :key="item"
@@ -172,6 +170,14 @@ function getNationName(){
             />
           </el-select>
         </el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="2">
+        <template #title>
+          <el-icon>
+            <CaretBottom/>
+          </el-icon>
+          ???
+        </template>
       </el-sub-menu>
     </el-menu>
   </el-aside>
