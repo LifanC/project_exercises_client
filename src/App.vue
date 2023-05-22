@@ -2,19 +2,16 @@
 import AppAside from "@/components/AppAside.vue";
 import CurrencyMain from "@/components/CurrencyMain.vue";
 import BMain from "@/components/BMain.vue";
+import CMain from "@/components/CMain.vue";
 import {ref} from "vue";
 
 const show1 = ref()
-const show2 = ref()
 
 PubSub.subscribe('main',function (msg, data){
   //[?,?] = [1,true]、[1,false]
   switch (data[0]){
     case '1':
       show1.value = data[1]
-      break
-    case '2':
-      show2.value = data[1]
       break
   }
 })
@@ -29,8 +26,11 @@ PubSub.subscribe('main',function (msg, data){
         <div v-show="show1">
           <CurrencyMain />
         </div>
-        <div v-show="show2">
+        <div v-show="show1">
           <BMain />
+        </div>
+        <div v-show="show1">
+          <CMain />
         </div>
 
       </el-container>
