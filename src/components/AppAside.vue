@@ -6,10 +6,8 @@ import axios from "axios";
 import {ref} from "vue";
 
 const rateName = ref('')
-const nation = ref('')
-const nationName = ref('')
-const nationDataName = ref()
 const tableDataName = ref()
+//table畫面
 const noGetAll = ref(false)
 
 function getList() {
@@ -55,16 +53,8 @@ function rateSubmit() {
 
 }
 
-// const fromData = reactive({
-//   v: 0
-// })
-//
-// console.log('fromData', fromData.v)
-// fromData.v++
-// console.log('fromData', fromData.v)
 
 function inquiry() {
-  getNationName()
   noGetAll.value = true
   PubSub.publish('noGetAll', noGetAll.value)
   axios.get('http://localhost:8080/getOnly', {
@@ -74,6 +64,8 @@ function inquiry() {
   })
       .then((res) => {
         PubSub.publish('transfer', res.data);
+        PubSub.publish('getNationCurMoney', res.data);
+        PubSub.publish('getRate', rateName.value);
       })
       .catch((error) => {
         console.log('error', error)
@@ -91,25 +83,6 @@ function inquiry() {
       })
 
 }
-
-function getNationName() {
-  axios.get('http://localhost:8080/getNationName', {
-    params: {
-      curField: rateName.value
-    }
-  })
-      .then((res) => {
-        nationDataName.value = res.data
-        nationName.value = JSON.parse(nationDataName.value[0].currencyNation)
-        nation.value = ''
-
-      })
-      .catch((error) => {
-        console.log('error', error)
-      })
-}
-
-
 
 </script>
 
@@ -135,16 +108,6 @@ function getNationName() {
                 :label="item.currency +' '+ item.currencyName"
                 :value="item.currency"
                 @click="inquiry"
-            />
-          </el-select>
-        </el-menu-item>
-        <el-menu-item index="1-2">
-          <el-select v-model="nation" size="large" placeholder="查詢使用此幣別的國家">
-            <el-option
-                v-for="item in nationName"
-                :key="item"
-                :label="item"
-                :value="item"
             />
           </el-select>
         </el-menu-item>
