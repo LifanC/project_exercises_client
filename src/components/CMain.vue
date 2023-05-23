@@ -9,10 +9,15 @@ const nationName = ref('')
 const nationDataName = ref()
 const show = ref(true)
 const tableData = ref()
-
 const curFieldMoney = ref(0)
+const curNameJson = ref()
+
+const dialogFormVisible = ref(false)
+
+const userId = ref('')
 
 PubSub.subscribe('getNationCurMoney', function (msg, data) {
+  curNameJson.value = data[0].curNameJson
   curFieldMoney.value = data[0].curFieldMoney
 })
 PubSub.subscribe('getRate', function (msg, data) {
@@ -25,6 +30,9 @@ const fromData = reactive({
   showMoney: null,
   userName: '',
   userNameQuery: '',
+  setMoney: null,
+  dalShowMoney: 0,
+  dialogShowMoney: 0,
 })
 
 function onSubmit() {
@@ -62,7 +70,8 @@ function fromSubmit() {
         nation: nation.value,
         rateName: rateName.value,
         exMoney: fromData.exMoney,
-        curFieldMoney: curFieldMoney.value
+        curFieldMoney: curFieldMoney.value,
+        curNameJson: curNameJson.value
       }
     }).then((res) => {
       tableData.value = res.data
@@ -81,25 +90,27 @@ function fromSubmit() {
 }
 
 function getUserMoney() {
-  axios.get('http://localhost:8080/getUserMoney', {
-    params: {
-      userName: fromData.userNameQuery
-    }
-  }).then((res) => {
-    tableData.value = res.data
-    if (res.data.length > 0) {
-      ElMessage({
-        message: '成功',
-        type: 'success',
-      })
-    } else {
-      ElMessage.error('重新輸入')
-    }
-  })
+  if (fromData.userNameQuery) {
+    axios.get('http://localhost:8080/getUserMoney', {
+      params: {
+        userName: fromData.userNameQuery
+      }
+    }).then((res) => {
+      tableData.value = res.data
+      if (res.data.length > 0) {
+        ElMessage({
+          message: '成功',
+          type: 'success',
+        })
+      } else {
+        ElMessage.error('重新輸入')
+      }
+    })
+  }
 }
 
+
 function detRow(row) {
-  console.log('row',row)
   ElMessageBox.confirm(
       '確定要 delete 嗎?',
       `編號:${row.userNameId}、姓名:${row.userName}`,
@@ -110,14 +121,18 @@ function detRow(row) {
       }
   )
       .then(() => {
-        console.log('成功')
+        axios.delete('http://localhost:8080/delId/' + row.userId + '/' + row.userName
+        ).then(response => {
+          tableData.value = response.data
+        }).catch(error => {
+          console.log('error:', error);
+        });
         ElMessage({
           type: 'success',
           message: '成功',
         })
       })
       .catch(() => {
-        console.log('取消')
         ElMessage({
           type: 'error',
           message: '取消',
@@ -127,8 +142,50 @@ function detRow(row) {
 
 
 //Table row的資料
-function deitRow(row){
-  console.log('row',row)
+function saveRow(row) {
+  dialogFormVisible.value = true
+  fromData.userName = row.userName
+  fromData.userNameId = row.userNameId
+  rateName.value = row.rateName
+  nation.value = row.nation
+  curFieldMoney.value = row.curFieldMoney
+  fromData.dialogShowMoney = row.showMoney
+  fromData.setMoney = null
+  userId.value = row.userId
+}
+
+function calcMoney() {
+  fromData.dalShowMoney = +fromData.setMoney * +curFieldMoney.value
+}
+
+//popconfirm 確定
+function confirmEvent() {
+  if (fromData.setMoney) {
+    if (fromData.setMoney >= 0) {
+      axios.put('http://localhost:8080/putAddMoney/'
+          + fromData.setMoney + '/'
+          + curFieldMoney.value + '/'
+          + userId.value + '/'
+          + fromData.userName
+      ).then(response => {
+        tableData.value = response.data
+        ElMessage({
+          message: '成功',
+          type: 'success',
+        })
+        dialogFormVisible.value = false
+      }).catch(error => {
+        console.log('error:', error);
+      });
+    } else {
+      ElMessage.error('金額不能小於 0')
+    }
+  } else {
+    ElMessage({
+      message: '請輸入金額，或取消',
+      type: 'warning',
+    })
+  }
 }
 
 
@@ -171,10 +228,11 @@ function deitRow(row){
           </el-form-item>
           &emsp;
           <el-form-item>
-            <el-button type="primary" @click="fromSubmit">確定送出</el-button>
+            <el-button type="primary" @click="fromSubmit">儲存資料</el-button>
           </el-form-item>
         </el-row>
         <el-row>
+          <el-divider/>
           <el-form-item>
             <el-text>查詢</el-text>
             <el-input
@@ -186,14 +244,12 @@ function deitRow(row){
         </el-row>
       </el-form>
     </el-container>
-
     <el-table
         :data="tableData"
         style="width: 100%">
-
       <el-table-column
           prop="userId"
-          label="流水編號"
+          label="流水號碼"
       />
       <el-table-column
           prop="userNameId"
@@ -205,10 +261,14 @@ function deitRow(row){
       />
       <el-table-column
           prop="exMoney"
-          label="金額"
+          label="儲存金額"
       />
       <el-table-column
           prop="rateName"
+          label="幣別"
+      />
+      <el-table-column
+          prop="curNameJson"
           label="幣別名稱"
       />
       <el-table-column
@@ -221,21 +281,89 @@ function deitRow(row){
       />
       <el-table-column
           prop="showMoney"
-          label="新台幣"
+          label="儲存金額(新台幣)"
       />
       <el-table-column>
         <template #default="scope">
           <el-button
               link type="primary"
-              @click.prevent="deitRow(scope.row)"
-          >Edit</el-button>
+              @click="saveRow(scope.row)"
+          >存錢
+          </el-button>
           <el-button
               link type="primary"
               @click.prevent="detRow(scope.row)"
-          >Delete</el-button>
+          >刪除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog v-model="dialogFormVisible" title="存錢">
+      <el-form :model="fromData">
+        <el-row>
+          <el-form-item>
+            <el-text>客戶編號</el-text>
+            <el-input v-model="fromData.userNameId" disabled/>
+          </el-form-item>
+          &emsp;
+          <el-form-item>
+            <el-text>姓名</el-text>
+            <el-input v-model="fromData.userName" disabled/>
+          </el-form-item>
+          &emsp;
+          <el-form-item>
+            <el-text>幣別</el-text>
+            <el-input v-model="rateName" disabled/>
+          </el-form-item>
+          &emsp;
+          <el-form-item>
+            <el-text>國家</el-text>
+            <el-input v-model="nation" disabled/>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item>
+            <el-text>匯率</el-text>
+            <el-input v-model="curFieldMoney" disabled/>
+          </el-form-item>
+          &emsp;
+          <el-form-item>
+            <el-text>儲存金額(新台幣)</el-text>
+            <el-input v-model="fromData.dialogShowMoney" disabled/>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item>
+            <el-text>存多少錢</el-text>
+            <el-input
+                v-model="fromData.setMoney"
+                @input="calcMoney"
+            />
+          </el-form-item>
+          &emsp;
+          <el-form-item>
+            <el-text>新台幣</el-text>
+            <el-input
+                v-model="fromData.dalShowMoney"
+                disabled
+            />
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-popconfirm
+              confirm-button-text="確定"
+              cancel-button-text="取消"
+              title="確定要存錢嗎?"
+              @confirm="confirmEvent"
+          >
+            <template #reference>
+              <el-button>確定</el-button>
+            </template>
+          </el-popconfirm>
+        </el-row>
+      </el-form>
+    </el-dialog>
 
 
   </div>
