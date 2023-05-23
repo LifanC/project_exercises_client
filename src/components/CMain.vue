@@ -13,8 +13,9 @@ const curFieldMoney = ref(0)
 const curNameJson = ref()
 
 const dialogFormVisible = ref(false)
-
 const userId = ref('')
+//存錢或取錢 deposit or withdraw money
+const depositOrWithdrawMoney = ref('')
 
 PubSub.subscribe('getNationCurMoney', function (msg, data) {
   curNameJson.value = data[0].curNameJson
@@ -61,7 +62,7 @@ function getNationName() {
 // })
 
 function fromSubmit() {
-  if (fromData.exMoney !== 0 && nation.value !== '' && fromData.userName !== '') {
+  if (fromData.exMoney >= 0 && nation.value !== '' && fromData.userName !== '') {
     axios({
       method: 'post',
       url: 'http://localhost:8080/fromSubmit',
@@ -142,7 +143,8 @@ function detRow(row) {
 
 
 //Table row的資料
-function saveRow(row) {
+
+function tableRowData(row){
   dialogFormVisible.value = true
   fromData.userName = row.userName
   fromData.userNameId = row.userNameId
@@ -152,13 +154,27 @@ function saveRow(row) {
   fromData.dialogShowMoney = row.showMoney
   fromData.setMoney = null
   userId.value = row.userId
+  fromData.exMoney = row.exMoney
+  curNameJson.value = row.curNameJson
+}
+const titleValue = ref('')
+function deposit(row) {
+  tableRowData(row)
+  depositOrWithdrawMoney.value = 'depositMoney'
+  titleValue.value = '存錢'
+}
+
+function withdraw(row){
+  tableRowData(row)
+  depositOrWithdrawMoney.value = 'withdrawMoney'
+  titleValue.value = '取錢'
 }
 
 function calcMoney() {
   fromData.dalShowMoney = +fromData.setMoney * +curFieldMoney.value
 }
 
-//popconfirm 確定
+//popconfirm 確定 存錢
 function confirmEvent() {
   if (fromData.setMoney) {
     if (fromData.setMoney >= 0) {
@@ -166,8 +182,10 @@ function confirmEvent() {
           + fromData.setMoney + '/'
           + curFieldMoney.value + '/'
           + userId.value + '/'
-          + fromData.userName
+          + fromData.userName + '/'
+          + depositOrWithdrawMoney.value
       ).then(response => {
+        fromData.dalShowMoney = 0
         tableData.value = response.data
         ElMessage({
           message: '成功',
@@ -287,7 +305,12 @@ function confirmEvent() {
         <template #default="scope">
           <el-button
               link type="primary"
-              @click="saveRow(scope.row)"
+              @click.prevent="withdraw(scope.row)"
+          >取錢
+          </el-button>
+          <el-button
+              link type="primary"
+              @click.prevent="deposit(scope.row)"
           >存錢
           </el-button>
           <el-button
@@ -299,24 +322,21 @@ function confirmEvent() {
       </el-table-column>
     </el-table>
 
-    <el-dialog v-model="dialogFormVisible" title="存錢">
+    <el-dialog v-model="dialogFormVisible" :title="titleValue">
       <el-form :model="fromData">
         <el-row>
           <el-form-item>
             <el-text>客戶編號</el-text>
             <el-input v-model="fromData.userNameId" disabled/>
           </el-form-item>
-          &emsp;
           <el-form-item>
-            <el-text>姓名</el-text>
+            <el-text>客戶姓名</el-text>
             <el-input v-model="fromData.userName" disabled/>
           </el-form-item>
-          &emsp;
           <el-form-item>
             <el-text>幣別</el-text>
             <el-input v-model="rateName" disabled/>
           </el-form-item>
-          &emsp;
           <el-form-item>
             <el-text>國家</el-text>
             <el-input v-model="nation" disabled/>
@@ -324,26 +344,35 @@ function confirmEvent() {
         </el-row>
         <el-row>
           <el-form-item>
+            <el-text>幣別名稱</el-text>
+            <el-input v-model="curNameJson" disabled/>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item>
+            <el-text>儲存金額</el-text>
+            <el-input v-model="fromData.exMoney" disabled/>
+          </el-form-item>
+          <el-form-item>
             <el-text>匯率</el-text>
             <el-input v-model="curFieldMoney" disabled/>
           </el-form-item>
-          &emsp;
           <el-form-item>
-            <el-text>儲存金額(新台幣)</el-text>
+            <el-text>兌換完，儲存金額(新台幣)</el-text>
             <el-input v-model="fromData.dialogShowMoney" disabled/>
           </el-form-item>
         </el-row>
         <el-row>
           <el-form-item>
-            <el-text>存多少錢</el-text>
+            <el-text>{{titleValue}}金額</el-text>
             <el-input
                 v-model="fromData.setMoney"
+                placeholder="儲存金額"
                 @input="calcMoney"
             />
           </el-form-item>
-          &emsp;
           <el-form-item>
-            <el-text>新台幣</el-text>
+            <el-text>兌換完，新台幣</el-text>
             <el-input
                 v-model="fromData.dalShowMoney"
                 disabled
@@ -354,7 +383,7 @@ function confirmEvent() {
           <el-popconfirm
               confirm-button-text="確定"
               cancel-button-text="取消"
-              title="確定要存錢嗎?"
+              :title="'確定要'+titleValue+'嗎?'"
               @confirm="confirmEvent"
           >
             <template #reference>
