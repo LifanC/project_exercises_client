@@ -19,6 +19,7 @@ const token =  PubSub.subscribe('BMain', function (msg, data) {
 <template>
   <div v-show="show">
     <el-table :data="tableData" height="80px" style="width: 100%">
+      <el-empty />
       <el-table-column
           prop="currencyNationArray"
           label="國家"
