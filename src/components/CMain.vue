@@ -30,10 +30,19 @@ const fromData = reactive({
   exMoney: 0,
   showMoney: null,
   userName: '',
+  userPhone: '',
   userNameQuery: '',
   setMoney: null,
   dalShowMoney: null,
   dialogShowMoney: 0,
+})
+
+const rules = reactive({
+  userName: [{required: true, message: '請輸入姓名', trigger: 'blur'}],
+  userPhone: [
+    {required: true, message: '請輸入電話', trigger: 'blur'},
+    {pattern: /^[0-9]{10}$/, message: '電話號碼格式不對'}
+  ],
 })
 
 
@@ -58,34 +67,39 @@ function getNationName() {
 //   show.value = data
 // })
 
+
+const ruleForm = ref(null)
+
 function fromSubmit() {
-  if (fromData.exMoney >= 0 && nation.value !== '' && fromData.userName !== '') {
-    axios({
-      method: 'post',
-      url: 'http://localhost:8080/fromSubmit',
-      data: {
-        userName: fromData.userName,
-        nation: nation.value,
-        rateName: rateName.value,
-        exMoney: fromData.exMoney,
-        curFieldMoney: curFieldMoney.value,
-        curNameJson: curNameJson.value
+  if (!ruleForm) return
+  ruleForm.value.validate((valid) => {
+    if (valid) {
+      if (nation.value !== '') {
+        axios({
+          method: 'post',
+          url: 'http://localhost:8080/fromSubmit',
+          data: {
+            userName: fromData.userName,
+            userPhone: fromData.userPhone,
+            nation: nation.value,
+            rateName: rateName.value,
+            exMoney: fromData.exMoney,
+            curFieldMoney: curFieldMoney.value,
+            curNameJson: curNameJson.value
+          }
+        }).then((res) => {
+          tableData.value = res.data
+          fromData.userName = ''
+          fromData.userPhone = ''
+          nation.value = ''
+          fromData.exMoney = 0
+          fromData.showMoney = null
+        })
       }
-    }).then((res) => {
-      tableData.value = res.data
-      fromData.userName = ''
-      nation.value = ''
-      fromData.exMoney = 0
-      fromData.showMoney = null
-    })
-  } else {
-    ElMessage({
-      showClose: true,
-      message: '請勿空白',
-      grouping: true,
-      type: 'error',
-    })
-  }
+    } else {
+      return false
+    }
+  })
 }
 
 function getUserMoney() {
@@ -282,14 +296,18 @@ function confirmEvent() {
           />
         </el-select>
       </el-aside>
-      <el-form :model="fromData">
+      <el-form :model="fromData" :rules="rules" ref="ruleForm">
         <el-row>
-          <el-form-item label="請輸入姓名">
+          <el-form-item label="請輸入姓名" prop="userName" required>
             <el-input v-model="fromData.userName"/>
           </el-form-item>
           &emsp;
+          <el-form-item label="請輸入電話" prop="userPhone" required>
+            <el-input v-model="fromData.userPhone"/>
+          </el-form-item>
+          &emsp;
           <el-form-item>
-            <el-button type="primary" @click="fromSubmit">新增資料</el-button>
+            <el-button type="primary" @click="fromSubmit(ruleForm)">新增資料</el-button>
           </el-form-item>
         </el-row>
         <el-row>
@@ -308,10 +326,10 @@ function confirmEvent() {
     <el-table
         :data="tableData"
         style="width: 100%">
-<!--      <el-table-column-->
-<!--          prop="userId"-->
-<!--          label="流水號碼"-->
-<!--      />-->
+      <!--      <el-table-column-->
+      <!--          prop="userId"-->
+      <!--          label="流水號碼"-->
+      <!--      />-->
       <el-table-column
           prop="userNameId"
           label="客戶編號"
@@ -433,7 +451,8 @@ function confirmEvent() {
             <template #reference>
               <el-button
                   type="primary"
-              >確定</el-button>
+              >確定
+              </el-button>
             </template>
           </el-popconfirm>
         </el-row>
