@@ -6,5 +6,6 @@
 2.Element Plus
 <br>
 3.axios API
+使用get、post、put、delete
 <br>
 4.pubsub.js
