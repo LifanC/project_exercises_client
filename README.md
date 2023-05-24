@@ -9,3 +9,9 @@
 使用get、post、put、delete
 <br>
 4.pubsub.js
+
+#抓取匯率API
+1.新增資料
+2.修改資料
+3.刪除資料
+4.查詢資料
