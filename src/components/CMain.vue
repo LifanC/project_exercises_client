@@ -32,13 +32,10 @@ const fromData = reactive({
   userName: '',
   userNameQuery: '',
   setMoney: null,
-  dalShowMoney: 0,
+  dalShowMoney: null,
   dialogShowMoney: 0,
 })
 
-function onSubmit() {
-  fromData.showMoney = +fromData.exMoney * +curFieldMoney.value
-}
 
 function getNationName() {
   axios.get('http://localhost:8080/getNationName', {
@@ -85,6 +82,7 @@ function fromSubmit() {
     ElMessage({
       showClose: true,
       message: '請勿空白',
+      grouping: true,
       type: 'error',
     })
   }
@@ -101,10 +99,15 @@ function getUserMoney() {
       if (res.data.length > 0) {
         ElMessage({
           message: '成功',
+          grouping: true,
           type: 'success',
         })
       } else {
-        ElMessage.error('重新輸入')
+        ElMessage({
+          message: '重新輸入',
+          grouping: true,
+          type: 'error',
+        })
       }
     })
   }
@@ -130,13 +133,15 @@ function detRow(row) {
         });
         ElMessage({
           type: 'success',
+          grouping: true,
           message: '成功',
         })
       })
       .catch(() => {
         ElMessage({
-          type: 'error',
           message: '取消',
+          grouping: true,
+          type: 'error',
         })
       })
 }
@@ -144,7 +149,7 @@ function detRow(row) {
 
 //Table row的資料
 
-function tableRowData(row){
+function tableRowData(row) {
   dialogFormVisible.value = true
   fromData.userName = row.userName
   fromData.userNameId = row.userNameId
@@ -156,51 +161,106 @@ function tableRowData(row){
   userId.value = row.userId
   fromData.exMoney = row.exMoney
   curNameJson.value = row.curNameJson
+  fromData.dalShowMoney = null
 }
+
 const titleValue = ref('')
+
 function deposit(row) {
   tableRowData(row)
   depositOrWithdrawMoney.value = 'depositMoney'
   titleValue.value = '存錢'
 }
 
-function withdraw(row){
+function withdraw(row) {
   tableRowData(row)
   depositOrWithdrawMoney.value = 'withdrawMoney'
   titleValue.value = '取錢'
 }
 
 function calcMoney() {
-  fromData.dalShowMoney = +fromData.setMoney * +curFieldMoney.value
+  if (fromData.setMoney < 0) {
+    ElMessage({
+      message: '金額不能小於 0',
+      grouping: true,
+      type: 'error',
+    })
+  }
+  switch (depositOrWithdrawMoney.value) {
+    case 'depositMoney':
+      let depositNumber = +fromData.setMoney * +curFieldMoney.value
+      let depositToFixed = depositNumber.toFixed(4)
+      fromData.dalShowMoney = parseFloat(depositToFixed);
+      break
+    case 'withdrawMoney':
+      if (+fromData.setMoney > +fromData.exMoney) {
+        ElMessage({
+          message: '取錢不能大於儲存金額',
+          grouping: true,
+          type: 'error',
+        })
+      } else {
+        let number = +fromData.setMoney * +curFieldMoney.value
+        let toFixed = number.toFixed(4)
+        fromData.dalShowMoney = parseFloat(toFixed)
+      }
+      break
+  }
 }
 
-//popconfirm 確定 存錢
+//popconfirm 確定 存錢 ->depositMoneyORwithdrawMoney
+
+function depositMoneyORwithdrawMoney() {
+  if (fromData.setMoney >= 0) {
+    axios.put('http://localhost:8080/putAddMoney/'
+        + fromData.setMoney + '/'
+        + curFieldMoney.value + '/'
+        + userId.value + '/'
+        + fromData.userName + '/'
+        + depositOrWithdrawMoney.value
+    ).then(response => {
+      fromData.dalShowMoney = null
+      tableData.value = response.data
+      ElMessage({
+        message: '成功',
+        grouping: true,
+        type: 'success',
+      })
+      dialogFormVisible.value = false
+    }).catch(error => {
+      console.log('error:', error);
+    });
+  } else {
+    ElMessage({
+      message: '金額不能小於 0',
+      grouping: true,
+      type: 'error',
+    })
+  }
+}
+
 function confirmEvent() {
   if (fromData.setMoney) {
-    if (fromData.setMoney >= 0) {
-      axios.put('http://localhost:8080/putAddMoney/'
-          + fromData.setMoney + '/'
-          + curFieldMoney.value + '/'
-          + userId.value + '/'
-          + fromData.userName + '/'
-          + depositOrWithdrawMoney.value
-      ).then(response => {
-        fromData.dalShowMoney = 0
-        tableData.value = response.data
-        ElMessage({
-          message: '成功',
-          type: 'success',
-        })
-        dialogFormVisible.value = false
-      }).catch(error => {
-        console.log('error:', error);
-      });
-    } else {
-      ElMessage.error('金額不能小於 0')
+    switch (depositOrWithdrawMoney.value) {
+      case 'depositMoney':
+        depositMoneyORwithdrawMoney()
+        break
+      case 'withdrawMoney':
+        if (+fromData.setMoney > +fromData.exMoney) {
+          ElMessage({
+            message: '取錢不能大於儲存金額',
+            grouping: true,
+            type: 'error',
+          })
+        } else {
+          depositMoneyORwithdrawMoney()
+        }
+        break
     }
   } else {
     ElMessage({
       message: '請輸入金額，或取消',
+      grouping: true,
       type: 'warning',
     })
   }
@@ -224,29 +284,12 @@ function confirmEvent() {
       </el-aside>
       <el-form :model="fromData">
         <el-row>
-          <el-form-item label="請輸入其他國家的金額">
-            <el-input
-                v-model="fromData.exMoney"
-                @input="onSubmit"
-            />
-          </el-form-item>
-          &emsp;
-          <el-form-item label="新台幣">
-            <el-input
-                v-model="fromData.showMoney"
-                placeholder="需要多少新台幣"
-                disabled
-            />
-          </el-form-item>
-          <!--        </el-row>-->
-          &emsp;
-          <!--        <el-row>-->
           <el-form-item label="請輸入姓名">
             <el-input v-model="fromData.userName"/>
           </el-form-item>
           &emsp;
           <el-form-item>
-            <el-button type="primary" @click="fromSubmit">儲存資料</el-button>
+            <el-button type="primary" @click="fromSubmit">新增資料</el-button>
           </el-form-item>
         </el-row>
         <el-row>
@@ -265,10 +308,10 @@ function confirmEvent() {
     <el-table
         :data="tableData"
         style="width: 100%">
-      <el-table-column
-          prop="userId"
-          label="流水號碼"
-      />
+<!--      <el-table-column-->
+<!--          prop="userId"-->
+<!--          label="流水號碼"-->
+<!--      />-->
       <el-table-column
           prop="userNameId"
           label="客戶編號"
@@ -364,15 +407,16 @@ function confirmEvent() {
         </el-row>
         <el-row>
           <el-form-item>
-            <el-text>{{titleValue}}金額</el-text>
+            <el-text>{{ titleValue }}金額</el-text>
             <el-input
                 v-model="fromData.setMoney"
                 placeholder="儲存金額"
+                type="number"
                 @input="calcMoney"
             />
           </el-form-item>
           <el-form-item>
-            <el-text>兌換完，新台幣</el-text>
+            <el-text>兌換完，新台幣(取小數點後面4碼)</el-text>
             <el-input
                 v-model="fromData.dalShowMoney"
                 disabled
@@ -387,7 +431,9 @@ function confirmEvent() {
               @confirm="confirmEvent"
           >
             <template #reference>
-              <el-button>確定</el-button>
+              <el-button
+                  type="primary"
+              >確定</el-button>
             </template>
           </el-popconfirm>
         </el-row>
