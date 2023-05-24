@@ -133,8 +133,8 @@ function getUserMoney() {
 
 function detRow(row) {
   ElMessageBox.confirm(
-      '確定要 delete 嗎?',
-      `編號:${row.userNameId}、姓名:${row.userName}`,
+      `確定要 刪除 嗎?`,
+      `流水號:${row.userId}、編號:${row.userNameId}、姓名:${row.userName}`,
       {
         confirmButtonText: '確定',
         cancelButtonText: '取消',
@@ -289,18 +289,17 @@ function confirmEvent() {
 <template>
   <div v-show="show">
     <el-container>
-      <el-aside style="padding-left: 10px" width="250px">
-        <el-select v-model="nation" placeholder="選擇國家">
-          <el-option
-              v-for="item in nationName"
-              :key="item"
-              :label="item"
-              :value="item"
-          />
-        </el-select>
-      </el-aside>
       <el-form :model="fromData" :rules="rules" ref="ruleForm">
         <el-row>
+          <el-select v-model="nation" placeholder="選擇國家">
+            <el-option
+                v-for="item in nationName"
+                :key="item"
+                :label="item"
+                :value="item"
+            />
+          </el-select>
+          &emsp;
           <el-form-item label="請輸入姓名" prop="userName" required>
             <el-input v-model="fromData.userName"/>
           </el-form-item>
@@ -329,17 +328,17 @@ function confirmEvent() {
     <el-table
         :data="tableData"
         style="width: 100%">
-      <!--      <el-table-column-->
-      <!--          prop="userId"-->
-      <!--          label="流水號碼"-->
-      <!--      />-->
+      <el-table-column
+          prop="userId"
+          label="流水號"
+      />
       <el-table-column
           prop="userNameId"
-          label="客戶編號"
+          label="編號"
       />
       <el-table-column
           prop="userName"
-          label="客戶名稱"
+          label="名稱"
       />
       <el-table-column
           prop="exMoney"
