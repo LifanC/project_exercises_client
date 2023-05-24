@@ -73,30 +73,33 @@ const ruleForm = ref(null)
 function fromSubmit() {
   if (!ruleForm) return
   ruleForm.value.validate((valid) => {
-    if (valid) {
-      if (nation.value !== '') {
-        axios({
-          method: 'post',
-          url: 'http://localhost:8080/fromSubmit',
-          data: {
-            userName: fromData.userName,
-            userPhone: fromData.userPhone,
-            nation: nation.value,
-            rateName: rateName.value,
-            exMoney: fromData.exMoney,
-            curFieldMoney: curFieldMoney.value,
-            curNameJson: curNameJson.value
-          }
-        }).then((res) => {
-          tableData.value = res.data
-          fromData.userName = ''
-          fromData.userPhone = ''
-          nation.value = ''
-          fromData.exMoney = 0
-          fromData.showMoney = null
-        })
-      }
+    if (valid && nation.value !== '') {
+      axios({
+        method: 'post',
+        url: 'http://localhost:8080/fromSubmit',
+        data: {
+          userName: fromData.userName,
+          userPhone: fromData.userPhone,
+          nation: nation.value,
+          rateName: rateName.value,
+          exMoney: fromData.exMoney,
+          curFieldMoney: curFieldMoney.value,
+          curNameJson: curNameJson.value
+        }
+      }).then((res) => {
+        tableData.value = res.data
+        fromData.userName = ''
+        fromData.userPhone = ''
+        nation.value = ''
+        fromData.exMoney = 0
+        fromData.showMoney = null
+      })
     } else {
+      ElMessage({
+        message: '請選擇國家',
+        grouping: true,
+        type: 'error',
+      })
       return false
     }
   })
@@ -287,7 +290,7 @@ function confirmEvent() {
   <div v-show="show">
     <el-container>
       <el-aside style="padding-left: 10px" width="250px">
-        <el-select v-model="nation" placeholder="查詢國家">
+        <el-select v-model="nation" placeholder="選擇國家">
           <el-option
               v-for="item in nationName"
               :key="item"
