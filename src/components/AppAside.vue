@@ -112,6 +112,18 @@ function inquiry() {
           </el-select>
         </el-menu-item>
       </el-sub-menu>
+      <el-sub-menu index="2">
+        <template #title>
+          <el-icon>
+            <CaretBottom/>
+          </el-icon>
+          U Bike
+        </template>
+        <el-menu-item index="2-1">
+          <el-text>YouBike2.0臺北市公共自行車即時資訊</el-text>
+        </el-menu-item>
+      </el-sub-menu>
+
     </el-menu>
   </el-aside>
 
