@@ -117,7 +117,7 @@ function inquiry() {
           <el-icon>
             <CaretBottom/>
           </el-icon>
-          U Bike
+          U Bike 查詢
         </template>
         <el-menu-item index="2-1">
           <el-text>YouBike2.0臺北市公共自行車即時資訊</el-text>
