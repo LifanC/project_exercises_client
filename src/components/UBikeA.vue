@@ -30,9 +30,8 @@ function uBikeSubmit() {
   axios.get('https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json')
       .then((response) => {
         axios({
-          //先刪除
           method: 'get',
-          url: 'http://localhost:8080/delUbike',
+          url: 'http://localhost:8080/queryUbike',
         }).then(() => {
           for (let i = 0; i < response.data.length; i++) {
             axios({
@@ -65,7 +64,9 @@ function getOnlyList() {
 
 <template>
   <div v-show="show">
+    &emsp;
     <el-text>查詢資訊</el-text>
+    &emsp;
     <el-select v-model="fromData.sarea" placeholder="請輸入地區" filterable>
       <el-option
           v-for="item in sareasArr"
@@ -76,7 +77,7 @@ function getOnlyList() {
       />
     </el-select>
     <el-divider/>
-    <el-table :data="tableData">
+    <el-table :data="tableData" height="500px" style="width: 100%">
       <el-table-column
           prop="sno"
           label="編號"

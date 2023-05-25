@@ -327,6 +327,7 @@ function confirmEvent() {
     </el-container>
     <el-table
         :data="tableData"
+        height="250px"
         style="width: 100%">
       <el-table-column
           prop="userId"
