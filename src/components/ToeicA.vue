@@ -122,6 +122,10 @@ function editRow(row) {
   fromData.dialogExplain = row.explain
 }
 
+function queryExample(row) {
+  window.open('https://dictionary.cambridge.org/zht/%E8%A9%9E%E5%85%B8/%E8%8B%B1%E8%AA%9E-%E6%BC%A2%E8%AA%9E-%E7%B9%81%E9%AB%94' + '/' + row.english)
+}
+
 function setData() {
   if (!ruleForm) return
   ruleForm.value.validate((valid) => {
@@ -143,7 +147,7 @@ function setData() {
         tableData.value = res.data
         dialogFormVisible.value = false
       })
-    }else{
+    } else {
       ElMessage({
         message: '請勿空白',
         grouping: true,
@@ -192,6 +196,12 @@ function setData() {
                 link type="primary"
                 @click.prevent="editRow(scope.row)"
             >修改
+            </el-button>
+            <br>
+            <el-button
+                link type="primary"
+                @click.prevent="queryExample(scope.row)"
+            >查詢例句
             </el-button>
           </template>
         </el-table-column>
