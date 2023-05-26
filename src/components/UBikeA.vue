@@ -2,7 +2,7 @@
 import {reactive, ref} from "vue";
 import axios from "axios";
 
-const show = ref(true)
+const show = ref()
 const tableData = ref()
 
 PubSub.subscribe('main', function (msg, data) {
@@ -11,6 +11,7 @@ PubSub.subscribe('main', function (msg, data) {
       if (data[1]) {
         uBikeSubmit()
         getOnlyList()
+        return show.value = true
       } else if (!data[1]) {
         return show.value = false
       }
@@ -63,7 +64,9 @@ function getOnlyList() {
 </script>
 
 <template>
+
   <div v-show="show">
+    <el-divider/>
     &emsp;
     <el-text>查詢資訊</el-text>
     &emsp;
@@ -111,6 +114,7 @@ function getOnlyList() {
       />
 
     </el-table>
+    <el-divider/>
   </div>
 
 </template>

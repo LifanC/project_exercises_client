@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import {Pointer, CaretBottom, Refresh} from "@element-plus/icons-vue";
+import {CaretBottom} from "@element-plus/icons-vue";
 import PubSub from 'pubsub-js'
 import axios from "axios";
 import {ref} from "vue";
@@ -121,6 +121,17 @@ function inquiry() {
         </template>
         <el-menu-item index="2-1">
           <el-text>YouBike2.0臺北市公共自行車即時資訊</el-text>
+        </el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="3">
+        <template #title>
+          <el-icon>
+            <CaretBottom/>
+          </el-icon>
+          TOEIC 單字
+        </template>
+        <el-menu-item index="2-1">
+          <el-text>1600個單字</el-text>
         </el-menu-item>
       </el-sub-menu>
 

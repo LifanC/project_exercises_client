@@ -4,10 +4,12 @@ import CurrencyMain from "@/components/CurrencyMain.vue";
 import BMain from "@/components/BMain.vue";
 import CMain from "@/components/CMain.vue";
 import UBikeA from "@/components/UBikeA.vue";
+import ToeicA from "@/components/ToeicA.vue";
 import {ref} from "vue";
 
 const show1 = ref()
 const show2 = ref()
+const show3 = ref()
 
 PubSub.subscribe('main',function (msg, data){
   //[?,?] = [1,true]、[1,false]
@@ -17,6 +19,9 @@ PubSub.subscribe('main',function (msg, data){
       break
     case '2':
       show2.value = data[1]
+      break
+    case '3':
+      show3.value = data[1]
       break
   }
 })
@@ -40,6 +45,10 @@ PubSub.subscribe('main',function (msg, data){
         <div v-show="show2">
           <UBikeA />
         </div>
+        <div v-show="show3">
+          <ToeicA/>
+        </div>
+
 
       </el-container>
     </el-container>
