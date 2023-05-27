@@ -125,13 +125,6 @@ function getUserMoney() {
     }
   }).then((res) => {
     tableData.value = res.data
-    if (res.data.length > 0) {
-      ElMessage({
-        message: '成功',
-        grouping: true,
-        type: 'success',
-      })
-    }
   })
 }
 

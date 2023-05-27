@@ -131,7 +131,7 @@ function inquiry() {
           TOEIC 單字
         </template>
         <el-menu-item index="2-1">
-          <el-text>1600個單字</el-text>
+          <el-text>TOEIC 單字練習</el-text>
         </el-menu-item>
       </el-sub-menu>
 
