@@ -26,6 +26,19 @@ PubSub.subscribe('getRate', function (msg, data) {
   getNationName()
 })
 
+PubSub.subscribe('main', function (msg, data) {
+  switch (data[0]) {
+    case '1':
+      if (data[1]) {
+        getUserMoney()
+        return show.value = true
+      } else if (!data[1]) {
+        return show.value = false
+      }
+      break
+  }
+})
+
 const fromData = reactive({
   exMoney: 0,
   showMoney: null,
@@ -106,28 +119,20 @@ function fromSubmit() {
 }
 
 function getUserMoney() {
-  if (fromData.userNameQuery) {
-    axios.get('http://localhost:8080/getUserMoney', {
-      params: {
-        userName: fromData.userNameQuery
-      }
-    }).then((res) => {
-      tableData.value = res.data
-      if (res.data.length > 0) {
-        ElMessage({
-          message: '成功',
-          grouping: true,
-          type: 'success',
-        })
-      } else {
-        ElMessage({
-          message: '重新輸入',
-          grouping: true,
-          type: 'error',
-        })
-      }
-    })
-  }
+  axios.get('http://localhost:8080/getUserMoney', {
+    params: {
+      userName: fromData.userNameQuery
+    }
+  }).then((res) => {
+    tableData.value = res.data
+    if (res.data.length > 0) {
+      ElMessage({
+        message: '成功',
+        grouping: true,
+        type: 'success',
+      })
+    }
+  })
 }
 
 
@@ -319,7 +324,8 @@ function confirmEvent() {
             <el-input
                 v-model="fromData.userNameQuery"
                 placeholder="請輸入姓名"
-                @blur="getUserMoney"
+                clearable
+                @input="getUserMoney"
             />
           </el-form-item>
         </el-row>
