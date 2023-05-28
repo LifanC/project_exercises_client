@@ -21,10 +21,13 @@ PubSub.subscribe('main', function (msg, data) {
 
 const fromData = reactive({
   sarea: '大安區',
+  ar: '',
 })
 
 const sareas = ref([])
 const sareasArr = ref([])
+const ar = ref([])
+const arArr = ref([])
 
 
 function uBikeSubmit() {
@@ -53,13 +56,33 @@ function uBikeSubmit() {
 function getOnlyList() {
   axios.get('http://localhost:8080/getOnlyList', {
     params: {
+      sarea: fromData.sarea,
+      ar: fromData.ar
+    }
+  }).then((res) => {
+    tableData.value = res.data
+    setTimeout(()=>{
+      fromData.ar = ''
+    },1000)
+    getOnlyLists()
+  })
+}
+
+function getOnlyLists(){
+  ar.value.splice(0,ar.value.length)
+  arArr.value.splice(0,arArr.value.length)
+  axios.get('http://localhost:8080/getOnlyLists', {
+    params: {
       sarea: fromData.sarea
     }
+  }).then((res) => {
+    for (let i = 0; i < res.data.length; i++) {
+      ar.value.push(res.data[i].ar)
+    }
+    arArr.value = [...new Set(ar.value)]
   })
-      .then((res) => {
-        tableData.value = res.data
-      })
 }
+
 
 </script>
 
@@ -73,6 +96,15 @@ function getOnlyList() {
     <el-select v-model="fromData.sarea" placeholder="請輸入地區" filterable>
       <el-option
           v-for="item in sareasArr"
+          :key="item"
+          :label="item"
+          :value="item"
+          @click="getOnlyList"
+      />
+    </el-select>
+    <el-select v-model="fromData.ar" placeholder="請輸入地址" filterable>
+      <el-option
+          v-for="item in arArr"
           :key="item"
           :label="item"
           :value="item"
