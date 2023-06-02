@@ -74,6 +74,7 @@ function getMusic() {
 }
 
 function paginationNum(val) {
+  fromData.musicTitle = ''
   valNum.value = val
   let ten = 10
   let a = ((val - 1) * ten)
