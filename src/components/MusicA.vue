@@ -157,7 +157,6 @@ function selectData() {
 
 <template>
   <el-divider/>
-  <el-text>API說明文件</el-text>
   <el-container>
     <el-table :data="infoData" height="80px">
       <el-table-column
