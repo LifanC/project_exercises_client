@@ -30,7 +30,7 @@ const handleOpen = (key: string, keyPath: string[]) => {
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
   const x = [key, false]
-  goMusicMethod(x[1])
+  goMusicMethod(x[0],x[1])
   PubSub.publish('main', x)
 }
 
@@ -85,9 +85,11 @@ function inquiry() {
 
 }
 
-function goMusicMethod(x){
+function goMusicMethod(key,x){
   const go = [x,0]
-  PubSub.publish('go',go)
+  if(key == 4){
+    PubSub.publish('go',go)
+  }
 }
 
 function go(v){
