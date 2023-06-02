@@ -93,6 +93,7 @@ const imageUrl = ref()
 const srcList = ref([])
 
 function showSrcList() {
+  srcList.value.splice(0,srcList.value.length)
   srcList.value.push(imageUrl.value)
 }
 
