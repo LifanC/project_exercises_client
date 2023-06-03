@@ -9,7 +9,9 @@ const elTableHeight = ref(100)
 
 const fromData = reactive({
   english: null,
+  englishAdd: null,
   chinese: null,
+  chineseAdd: null,
   example: null,
   explain: null,
   toeicId: null,
@@ -26,12 +28,18 @@ const rules = reactive({
   explain: [{required: true, message: '請輸入中文例句翻譯', trigger: 'blur'}],
 })
 
+const rulesAdd = reactive({
+  englishAdd: [{required: true, message: '請輸入英文單字', trigger: 'blur'}],
+  chineseAdd: [{required: true, message: '請輸入中文翻譯', trigger: 'blur'}],
+})
+
 const dialogRules = reactive({
   dialogEnglish: [{required: true, message: '請輸入英文單字', trigger: 'blur'}],
   dialogChinese: [{required: true, message: '請輸入中文翻譯', trigger: 'blur'}],
 })
 
 const ruleForm = ref(null)
+const ruleFormAdd = ref(null)
 
 
 PubSub.subscribe('main', function (msg, data) {
@@ -54,15 +62,15 @@ function toeicWords() {
 }
 
 function fromSubmit() {
-  if (!ruleForm) return
-  ruleForm.value.validate((valid) => {
+  if (!ruleFormAdd) return
+  ruleFormAdd.value.validate((valid) => {
     if (valid) {
       axios({
         method: 'post',
         url: 'http://localhost:8080/toeicFromSubmit',
         data: {
-          english: fromData.english,
-          chinese: fromData.chinese
+          english: fromData.englishAdd,
+          chinese: fromData.chineseAdd
         }
       }).then((res) => {
         ElMessage({
@@ -70,8 +78,8 @@ function fromSubmit() {
           grouping: true,
           type: 'success',
         })
-        fromData.english = null
-        fromData.chinese = null
+        fromData.englishAdd = null
+        fromData.chineseAdd = null
       })
     } else {
       ElMessage({
@@ -211,14 +219,14 @@ function queryToeicWords() {
     <el-divider/>
     <el-row>
       <el-container>
-        <el-form :model="fromData" :rules="rules" ref="ruleForm">
+        <el-form :model="fromData" :rules="rulesAdd" ref="ruleFormAdd">
           <el-row>
-            <el-form-item label="英文單字" prop="english" required>
-              <el-input v-model="fromData.english"/>
+            <el-form-item label="英文單字" prop="englishAdd">
+              <el-input v-model="fromData.englishAdd"/>
             </el-form-item>
             &emsp;
-            <el-form-item label="中文翻譯" prop="chinese" required>
-              <el-input v-model="fromData.chinese"/>
+            <el-form-item label="中文翻譯" prop="chineseAdd">
+              <el-input v-model="fromData.chineseAdd"/>
             </el-form-item>
             &emsp;
             <el-form-item>
@@ -280,11 +288,11 @@ function queryToeicWords() {
         <el-container>
           <el-form :model="fromData" :rules="rules" ref="ruleForm">
             <el-row>
-              <el-form-item label="新增英文例句" prop="example" required>
+              <el-form-item label="新增英文例句" prop="example">
                 <el-input v-model="fromData.example" type="textarea" style="width: 500px"/>
               </el-form-item>
               &emsp;
-              <el-form-item label="新增中文例句翻譯" prop="explain" required>
+              <el-form-item label="新增中文例句翻譯" prop="explain">
                 <el-input v-model="fromData.explain" type="textarea" style="width: 500px"/>
               </el-form-item>
               &emsp;

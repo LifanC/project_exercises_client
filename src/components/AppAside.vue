@@ -282,6 +282,17 @@ function go(v){
           </el-button>
         </el-menu-item>
       </el-sub-menu>
+      <el-sub-menu index="5">
+        <template #title>
+          <el-icon>
+            <CaretBottom/>
+          </el-icon>
+          聖經
+        </template>
+        <el-menu-item index="5-1">
+          <el-text>聖經</el-text>
+        </el-menu-item>
+      </el-sub-menu>
     </el-menu>
   </el-aside>
 
