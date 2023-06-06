@@ -10,7 +10,7 @@ PubSub.subscribe('main', function (msg, data) {
     case '2':
       if (data[1]) {
         uBikeSubmit()
-        getOnlyList()
+        setTimeout(()=>{getOnlyList()},1000)
         return show.value = true
       } else if (!data[1]) {
         return show.value = false
