@@ -97,14 +97,6 @@ function go(v) {
   PubSub.publish('go', go)
 }
 
-const chatperOpen = (key) => {
-  let y = [true, key]
-  PubSub.publish('chatper', y)
-}
-const chatperClose = (key) => {
-  let y = [false, key]
-  PubSub.publish('chatper', y)
-}
 
 
 </script>
@@ -301,94 +293,6 @@ const chatperClose = (key) => {
         <el-menu-item index="5-1">
           <el-text>聖經</el-text>
         </el-menu-item>
-      </el-sub-menu>
-      <el-sub-menu index="6">
-        <template #title>
-          <el-icon>
-            <CaretBottom/>
-          </el-icon>
-          KUSO英文法
-        </template>
-        <el-menu
-            @open="chatperOpen"
-            @close="chatperClose"
-        >
-          <el-sub-menu index="1">
-            <template #title>
-              <el-text>Chatper(1)五大句型</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="2">
-            <template #title>
-              <el-text>Chatper(2)時式</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="3">
-            <template #title>
-              <el-text>Chatper(3)語態</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="4">
-            <template #title>
-              <el-text>Chatper(4)助動詞</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="5">
-            <template #title>
-              <el-text>Chatper(5)名詞子句</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="6">
-            <template #title>
-              <el-text>Chatper(6)形容詞子句</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="7">
-            <template #title>
-              <el-text>Chatper(7)連接句</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="8">
-            <template #title>
-              <el-text>Chatper(8)假設語氣</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="9">
-            <template #title>
-              <el-text>Chatper(9)不定詞</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="10">
-            <template #title>
-              <el-text>Chatper(10)動名詞</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="11">
-            <template #title>
-              <el-text>Chatper(11)分詞</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="12">
-            <template #title>
-              <el-text>Chatper(12)形容詞與副詞</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="13">
-            <template #title>
-              <el-text>Chatper(13)代名詞</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="14">
-            <template #title>
-              <el-text>Chatper(14)倒裝句</el-text>
-            </template>
-          </el-sub-menu>
-          <el-sub-menu index="15">
-            <template #title>
-              <el-text>Chatper(15)句型大補帖</el-text>
-            </template>
-          </el-sub-menu>
-        </el-menu>
       </el-sub-menu>
     </el-menu>
   </el-aside>
