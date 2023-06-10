@@ -7,6 +7,7 @@ import UBikeA from "@/components/UBikeA.vue";
 import ToeicA from "@/components/ToeicA.vue";
 import MusicA from "@/components/MusicA.vue";
 import GodA from "@/components/GodA.vue";
+import FunctionA from "@/components/FunctionA.vue";
 
 import {ref} from "vue";
 
@@ -15,6 +16,7 @@ const show2 = ref()
 const show3 = ref()
 const show4 = ref()
 const show5 = ref()
+const show6 = ref()
 
 PubSub.subscribe('main', function (msg, data) {
   switch (data[0]) {
@@ -29,6 +31,9 @@ PubSub.subscribe('main', function (msg, data) {
       break
     case '5':
       show5.value = data[1]
+      break
+    case '6':
+      show6.value = data[1]
       break
   }
 })
@@ -62,6 +67,9 @@ PubSub.subscribe('go', function (msg, data) {
       </div>
       <div v-show="show5">
         <GodA/>
+      </div>
+      <div v-show="show6">
+        <FunctionA/>
       </div>
     </el-container>
   </el-container>

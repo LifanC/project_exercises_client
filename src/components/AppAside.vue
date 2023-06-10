@@ -97,8 +97,6 @@ function go(v) {
   PubSub.publish('go', go)
 }
 
-
-
 </script>
 
 <template>
@@ -292,6 +290,17 @@ function go(v) {
         </template>
         <el-menu-item index="5-1">
           <el-text>聖經</el-text>
+        </el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="6">
+        <template #title>
+          <el-icon>
+            <CaretBottom/>
+          </el-icon>
+          功能
+        </template>
+        <el-menu-item index="6-1">
+          <el-text>小型外匯所</el-text>
         </el-menu-item>
       </el-sub-menu>
     </el-menu>
