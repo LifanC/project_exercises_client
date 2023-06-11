@@ -8,6 +8,7 @@ import ToeicA from "@/components/ToeicA.vue";
 import MusicA from "@/components/MusicA.vue";
 import GodA from "@/components/GodA.vue";
 import FunctionA from "@/components/FunctionA.vue";
+import index from "@/components/index.vue";
 
 import {ref} from "vue";
 
@@ -17,8 +18,10 @@ const show3 = ref()
 const show4 = ref()
 const show5 = ref()
 const show6 = ref()
+const showIndex = ref(true)
 
 PubSub.subscribe('main', function (msg, data) {
+  showIndex.value = false
   switch (data[0]) {
     case '1':
       show1.value = data[1]
@@ -38,7 +41,12 @@ PubSub.subscribe('main', function (msg, data) {
   }
 })
 PubSub.subscribe('go', function (msg, data) {
+  showIndex.value = false
   show4.value = data[0]
+})
+
+PubSub.subscribe('index', function (msg, data) {
+  showIndex.value=true;
 })
 
 </script>
@@ -47,6 +55,9 @@ PubSub.subscribe('go', function (msg, data) {
     <AppAside/>
     <el-container>
       <el-header></el-header>
+      <div v-show="showIndex">
+        <index/>
+      </div>
       <div v-show="show1">
         <CurrencyMain/>
       </div>

@@ -639,11 +639,7 @@ function depositMoneyORwithdrawMoney() {
           </el-row>
         </el-form>
       </el-dialog>
-
     </el-main>
-    <el-footer>
-      <el-text size="small">Luke版權所有｜ 2023 Luke information Co., Ltd. All Rights Reserved</el-text>
-    </el-footer>
   </el-container>
 
 </template>

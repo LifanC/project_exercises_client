@@ -97,11 +97,17 @@ function go(v) {
   PubSub.publish('go', go)
 }
 
+function index(){
+  PubSub.publish('index')
+}
+
 </script>
 
 <template>
-  <el-aside width="300px">
-    <h1 style="padding-left: 100px">Demo</h1>
+  <el-aside width="220px">
+    <el-button size="large" link @click="index">
+      <h1 style="padding-left: 100px">首頁</h1>
+    </el-button>
     <el-menu
         @open="handleOpen"
         @close="handleClose"

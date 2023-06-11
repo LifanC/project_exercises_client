@@ -11,7 +11,7 @@ PubSub.subscribe('main', function (msg, data) {
       } else if (!data[1]) {
         fromData.godsName = ''
         fromData.godsChatper = ''
-        tableData.value = ''
+        tableData.value = []
         godsChatperArr.value = []
       }
       break
@@ -56,36 +56,39 @@ function pagination(val) {
 
 function getGodOnly() {
   YN.value = false
-  axios.get('http://localhost:8080/god/getGodOnly', {
-    params: {
-      name: fromData.godsName,
-      chatper: fromData.godsChatper
-    }
-  })
-      .then((response) => {
-        v.value = []
-        for (let i = 0; i < (Math.ceil(+(response.data.length))); i = i + 30) {
-          v.value.push(i)
-        }
-        godLength.value = v.value.length * 10
-        if (typeof v.value[valNum.value - 1] === 'number') {
-          axios.get('http://localhost:8080/god/getTenGodData', {
-            params: {
-              name: fromData.godsName,
-              chatper: fromData.godsChatper,
-              skip: v.value[valNum.value - 1]
-            }
-          })
-              .then((response) => {
-                tableData.value = response.data
-              })
-        }
-        godsChatper.value = []
-        for (let i = 0; i < response.data.length; i++) {
-          godsChatper.value.push(response.data[i].chatper)
-        }
-        godsChatperArr.value = [...new Set(godsChatper.value)]
-      })
+  if(fromData.godsName !== '' || fromData.godsChatper !== ''){
+    axios.get('http://localhost:8080/god/getGodOnly', {
+      params: {
+        name: fromData.godsName,
+        chatper: fromData.godsChatper
+      }
+    })
+        .then((response) => {
+          console.log('response',response.data)
+          v.value = []
+          for (let i = 0; i < (Math.ceil(+(response.data.length))); i = i + 30) {
+            v.value.push(i)
+          }
+          godLength.value = v.value.length * 10
+          if (typeof v.value[valNum.value - 1] === 'number') {
+            axios.get('http://localhost:8080/god/getTenGodData', {
+              params: {
+                name: fromData.godsName,
+                chatper: fromData.godsChatper,
+                skip: v.value[valNum.value - 1]
+              }
+            })
+                .then((response) => {
+                  tableData.value = response.data
+                })
+          }
+          godsChatper.value = []
+          for (let i = 0; i < response.data.length; i++) {
+            godsChatper.value.push(response.data[i].chatper)
+          }
+          godsChatperArr.value = [...new Set(godsChatper.value)]
+        })
+  }
   axios.get('http://localhost:8080/god/getGodOnly', {
     params: {
       name: fromData.godsName
@@ -149,7 +152,7 @@ function tableArr() {
       :total="godLength"
   />
 
-  <el-table :data="tableData" height="100%" border>
+  <el-table :data="tableData" height="500px" border>
     <el-table-column
         prop="chatper"
         label="章"
