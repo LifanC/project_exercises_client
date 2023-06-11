@@ -114,7 +114,7 @@ function tableArr() {
   <el-divider/>
   &emsp;
   <el-text size="large" tag="b">隨機聖經</el-text>
-  <el-table :data="tableDataArr" height="300px">
+  <el-table :data="tableDataArr" height="300px" border>
     <el-table-column prop="name" label="聖經名稱" width="200px"/>
     <el-table-column prop="chatper" label="章" width="50px"/>
     <el-table-column prop="section" label="節" width="50px"/>
@@ -149,7 +149,7 @@ function tableArr() {
       :total="godLength"
   />
 
-  <el-table :data="tableData" height="100%">
+  <el-table :data="tableData" height="100%" border>
     <el-table-column
         prop="chatper"
         label="章"

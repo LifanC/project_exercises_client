@@ -112,7 +112,7 @@ function getOnlyLists(){
       />
     </el-select>
     <el-divider/>
-    <el-table :data="tableData" height="500px" style="width: 100%">
+    <el-table :data="tableData" height="500px" border style="width: 100%">
       <el-table-column
           prop="sno"
           label="編號"

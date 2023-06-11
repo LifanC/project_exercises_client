@@ -324,10 +324,7 @@ function confirmEvent() {
         </el-row>
       </el-form>
     </el-container>
-    <el-table
-        :data="tableData"
-        height="250px"
-        style="width: 100%">
+    <el-table :data="tableData" height="250px" border style="width: 100%">
       <el-table-column
           prop="userId"
           label="流水號"

@@ -20,7 +20,7 @@ const token =  PubSub.subscribe('transfer', function (msg, data) {
 
 <template>
   <div v-show="show">
-    <el-table :data="tableData" height="80px" style="width: 100%">
+    <el-table :data="tableData" height="80px" border style="width: 100%">
       <el-empty />
       <el-table-column
           prop=""

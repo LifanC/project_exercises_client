@@ -244,8 +244,8 @@ function save_cur() {
 
 function tableRowData(row) {
   dialogFormVisible.value = true
-  fromData.userName = row.user_name
-  fromData.userNameId = row.user_name_id
+  fromData.userName = row.userName
+  fromData.userNameId = row.userNameId
   rateName.value = row.cur_number
   curFieldMoney.value = row.cur_field_money
   fromData.dialogShowMoney = row.show_money
@@ -255,10 +255,12 @@ function tableRowData(row) {
   fromData.dalShowMoney = null
 }
 
+const placeholder = ref()
 /**
  * 取錢
  * */
 function withdraw(row) {
+  placeholder.value = '取錢'
   method()
   if (cur_number.value === '') {
     show.value = true
@@ -274,6 +276,7 @@ function withdraw(row) {
  * 存錢
  * */
 function deposit(row) {
+  placeholder.value = '存錢'
   method()
   if (cur_number.value === '') {
     show.value = true
@@ -283,6 +286,10 @@ function deposit(row) {
   tableRowData(row)
   depositOrWithdrawMoney.value = 'depositMoney'
   titleValue.value = '存錢'
+}
+
+function exit(){
+  dialogFormVisible.value = false
 }
 
 /**
@@ -447,7 +454,7 @@ function depositMoneyORwithdrawMoney() {
         &emsp;
         <el-button type="primary" @click="save_cur">存檔</el-button>
       </div>
-      <el-table :data="tableData" height="80px" style="width: 100%">
+      <el-table :data="tableData" height="80px" border style="width: 100%">
         <el-empty/>
         <el-table-column
             prop=""
@@ -486,7 +493,7 @@ function depositMoneyORwithdrawMoney() {
 
       </el-table>
       <br>
-      <el-table :data="tableDataMoney" height="100%" style="width: 100%">
+      <el-table :data="tableDataMoney" height="100%" border style="width: 100%">
         <el-empty/>
         <el-table-column
             label="功能"
@@ -495,15 +502,15 @@ function depositMoneyORwithdrawMoney() {
           <template #default="scope">
             <el-button
                 size="large"
-                plain
+                link
                 type="primary"
                 @click.prevent="deposit(scope.row)"
             >存錢
             </el-button>
-            <br><br>
+            <br>
             <el-button
                 size="large"
-                plain
+                link
                 type="primary"
                 @click.prevent="withdraw(scope.row)"
             >取錢
@@ -601,7 +608,7 @@ function depositMoneyORwithdrawMoney() {
               <el-text>{{ titleValue }}金額</el-text>
               <el-input
                   v-model="fromData.setMoney"
-                  placeholder="儲存金額"
+                  :placeholder="placeholder"
                   type="number"
                   @input="calcMoney"
               />
@@ -628,6 +635,7 @@ function depositMoneyORwithdrawMoney() {
                 </el-button>
               </template>
             </el-popconfirm>
+            <el-button type="primary" @click="exit">取消</el-button>
           </el-row>
         </el-form>
       </el-dialog>

@@ -248,7 +248,7 @@ function queryToeicWords() {
     </el-row>
     <el-divider/>
     <el-text>隨機單字</el-text>
-    <el-table :data="tableData" :height="elTableHeight">
+    <el-table :data="tableData" :height="elTableHeight" border>
       <el-table-column width="80px">
         <template #default="scope">
           <el-button
