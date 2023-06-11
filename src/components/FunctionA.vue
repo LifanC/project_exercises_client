@@ -158,8 +158,7 @@ function sure() {
       }
       break
     case
-    '修改'
-    :
+    '修改':
       if (fromData.userName !== '' && fromData.passWord !== '') {
         axios({
           method: 'put',
@@ -168,6 +167,7 @@ function sure() {
               + fromData.passWord
         })
             .then((response) => {
+              tableDataMoney.value = response.data
               ElMessage.success('修改成功')
               dialogFormVisible1.value = false
             })
@@ -444,6 +444,7 @@ function depositMoneyORwithdrawMoney() {
               @click="inquiry"
           />
         </el-select>
+        &emsp;
         <el-button type="primary" @click="save_cur">存檔</el-button>
       </div>
       <el-table :data="tableData" height="80px" style="width: 100%">
@@ -484,6 +485,7 @@ function depositMoneyORwithdrawMoney() {
         />
 
       </el-table>
+      <br>
       <el-table :data="tableDataMoney" height="100%" style="width: 100%">
         <el-empty/>
         <el-table-column
@@ -495,25 +497,25 @@ function depositMoneyORwithdrawMoney() {
                 size="large"
                 plain
                 type="primary"
-                @click.prevent="withdraw(scope.row)"
-            >取錢
+                @click.prevent="deposit(scope.row)"
+            >存錢
             </el-button>
             <br><br>
             <el-button
                 size="large"
                 plain
                 type="primary"
-                @click.prevent="deposit(scope.row)"
-            >存錢
+                @click.prevent="withdraw(scope.row)"
+            >取錢
             </el-button>
           </template>
         </el-table-column>
         <el-table-column
-            prop="user_name_id"
+            prop="userNameId"
             label="客戶編號"
         />
         <el-table-column
-            prop="user_name"
+            prop="userName"
             label="客戶名稱"
             width="100%"
         />
@@ -555,7 +557,7 @@ function depositMoneyORwithdrawMoney() {
             label="兌換完新台幣"
         />
         <el-table-column
-            prop="create_time"
+            prop="createTime"
             label="新增日期"
         />
         <el-table-column
