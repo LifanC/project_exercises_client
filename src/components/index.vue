@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, onUnmounted, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import axios from "axios";
 
 const calendarValue = ref(new Date())
@@ -53,9 +53,9 @@ const fromData = reactive({
 })
 
 function handle() {
+  calendarDetails.value = calendar()
   visible.value = true
   dialogFormVisible.value = true
-  calendarDetails.value = calendar()
   // console.log(triggerRef.value.getBoundingClientRect())
   axios({
     method: 'get',
@@ -72,6 +72,7 @@ function handle() {
         }
       })
 }
+
 
 function ins() {
   axios({
@@ -110,6 +111,9 @@ function del() {
       })
 }
 
+
+
+
 </script>
 
 <template>
@@ -141,7 +145,9 @@ function del() {
                 {{ fromData.ex}}
               </template>
             </el-tooltip>
-            <el-calendar v-model="calendarValue" @click="handle">
+            <el-calendar v-model="calendarValue"
+                         @click="handle"
+            >
               <template #date-cell="{ data }">
                 <el-text :class="data.isSelected ? 'is-selected' : ''">
                   {{ data.day.split('-').slice(1).join('/') }}

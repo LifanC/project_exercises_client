@@ -1,8 +1,5 @@
 <script setup>
 import AppAside from "@/components/AppAside.vue";
-import CurrencyMain from "@/components/CurrencyMain.vue";
-import BMain from "@/components/BMain.vue";
-import CMain from "@/components/CMain.vue";
 import UBikeA from "@/components/UBikeA.vue";
 import ToeicA from "@/components/ToeicA.vue";
 import MusicA from "@/components/MusicA.vue";
@@ -12,7 +9,6 @@ import index from "@/components/index.vue";
 
 import {ref} from "vue";
 
-const show1 = ref()
 const show2 = ref()
 const show3 = ref()
 const show4 = ref()
@@ -23,9 +19,6 @@ const showIndex = ref(true)
 PubSub.subscribe('main', function (msg, data) {
   showIndex.value = false
   switch (data[0]) {
-    case '1':
-      show1.value = data[1]
-      break
     case '2':
       show2.value = data[1]
       break
@@ -57,15 +50,6 @@ PubSub.subscribe('index', function (msg, data) {
       <el-header></el-header>
       <div v-show="showIndex">
         <index/>
-      </div>
-      <div v-show="show1">
-        <CurrencyMain/>
-      </div>
-      <div v-show="show1">
-        <BMain/>
-      </div>
-      <div v-show="show1">
-        <CMain/>
       </div>
       <div v-show="show2">
         <UBikeA/>

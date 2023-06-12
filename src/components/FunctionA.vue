@@ -17,6 +17,10 @@ const curFieldMoney = ref()
 const userId = ref('')
 
 const show = ref(false)
+const showFunction = ref(true)
+const dialogVshowFindPassWord = ref(true)
+const fPassword = ref('')
+
 
 const dialogFormVisible = ref(false)
 const titleValue = ref('')
@@ -40,6 +44,7 @@ const fromData = reactive({
 PubSub.subscribe('main', function (msg, data) {
   //['6', true、false]
   sign_out_dialog()
+  show.value = false
 })
 
 const handleSelect = (key, keyPath) => {
@@ -51,6 +56,7 @@ const handleSelect = (key, keyPath) => {
  * 註冊
  * */
 function register_dialog() {
+  dialogVshowFindPassWord.value = false
   dialogFormVisible1.value = true
   fromData.userName = ''
   fromData.passWord = ''
@@ -64,6 +70,7 @@ function register_dialog() {
  * 登入
  * */
 function login_dialog() {
+  dialogVshowFindPassWord.value = true
   dialogFormVisible1.value = true
   fromData.userName = ''
   fromData.passWord = ''
@@ -81,6 +88,7 @@ function login_dialog() {
  * 修改
  * */
 function edit_dialog() {
+  dialogVshowFindPassWord.value = false
   if (userName.value === '未登入') {
     fromData.userName = ''
     fromData.passWord = ''
@@ -109,8 +117,10 @@ function method() {
         cur_number.value = response.data[0].cur_number
         if (response.data[0].cur_number === '') {
           show.value = true
+          showFunction.value = true
         } else {
           show.value = false
+          showFunction.value = false
         }
       })
 }
@@ -131,8 +141,10 @@ function sure() {
           data: fromData
         })
             .then((response) => {
-              userName.value = '註冊成功'
+              sign_out_dialog()
+              fPassword.value = ''
               dialogFormVisible1.value = false
+              ElMessage.success('註冊成功')
             })
       } else {
         ElMessage.error('請勿空白')
@@ -146,6 +158,7 @@ function sure() {
           data: fromData
         })
             .then((response) => {
+              fPassword.value = ''
               userName.value = response.data[0]
               userNameId.value = response.data[1]
               dialogFormVisible1.value = false
@@ -167,6 +180,7 @@ function sure() {
               + fromData.passWord
         })
             .then((response) => {
+              fPassword.value = ''
               tableDataMoney.value = response.data
               ElMessage.success('修改成功')
               dialogFormVisible1.value = false
@@ -185,6 +199,10 @@ function sure() {
  * 登出
  * */
 function sign_out_dialog() {
+  rateName.value = []
+  show.value = false
+  dialogVshowFindPassWord.value = true
+  fPassword.value = ''
   tableDataMoney.value = []
   tableData.value = []
   axios({
@@ -203,7 +221,7 @@ function sign_out_dialog() {
 getList()
 
 function getList() {
-  axios.get('http://localhost:8080/getNation')
+  axios.get('http://localhost:8080/rate/getNation')
       .then((response) => {
         tableDataName.value = response.data
       })
@@ -212,11 +230,11 @@ function getList() {
 /**
  * 查詢金額
  * */
-const cField = ref()
-const cFieldMoney = ref()
+const cField = ref('')
+const cFieldMoney = ref('')
 
 function inquiry() {
-  axios.get('http://localhost:8080/getOnly', {
+  axios.get('http://localhost:8080/rate/getOnly', {
     params: {
       curField: rateName.value
     }
@@ -233,13 +251,17 @@ function inquiry() {
  * 存幣別、匯率
  * */
 function save_cur() {
-  axios({
-    method: 'put',
-    url: 'http://localhost:8080/function/save_cur/' + userNameId.value + '/' + cField.value + '/' + cFieldMoney.value
-  })
-      .then((response) => {
-        tableDataMoney.value = response.data
-      })
+  if(cField.value !== ''){
+    showFunction.value = false
+    axios({
+      method: 'put',
+      url: 'http://localhost:8080/function/save_cur/' + userNameId.value + '/' + cField.value + '/' + cFieldMoney.value
+    })
+        .then((response) => {
+          method()
+          ElMessage.success('成功，存取幣別、匯率')
+        })
+  }
 }
 
 function tableRowData(row) {
@@ -256,6 +278,7 @@ function tableRowData(row) {
 }
 
 const placeholder = ref()
+
 /**
  * 取錢
  * */
@@ -288,7 +311,7 @@ function deposit(row) {
   titleValue.value = '存錢'
 }
 
-function exit(){
+function exit() {
   dialogFormVisible.value = false
 }
 
@@ -380,6 +403,24 @@ function depositMoneyORwithdrawMoney() {
   }
 }
 
+/**
+ * 查詢密碼
+ * */
+function findPassword() {
+  if (fromData.userName !== '') {
+    axios({
+      method: 'get',
+      url: 'http://localhost:8080/function/findPassword',
+      params: {
+        userName: fromData.userName
+      }
+    })
+        .then((response) => {
+          fPassword.value = response.data
+        })
+  }
+}
+
 
 </script>
 
@@ -424,35 +465,51 @@ function depositMoneyORwithdrawMoney() {
         </el-descriptions-item>
       </el-descriptions>
 
-      <el-dialog v-model="dialogFormVisible1" :title="register_and_login">
+      <el-dialog v-model="dialogFormVisible1" :title="register_and_login" width="500px">
         <el-form v-model="fromData">
-          <el-form-item label="UserName">
-            <el-input v-model="fromData.userName" clearable :disabled="false_and_true_1"/>
-          </el-form-item>
+          <el-row>
+            <el-form-item label="UserName">
+              <el-input v-model="fromData.userName" clearable :disabled="false_and_true_1"/>
+            </el-form-item>
+          </el-row>
           <el-form-item label="PassWord">
-            <el-input v-model="fromData.passWord" clearable type="password" show-password :disabled="false_and_true_2"/>
+            <el-row>
+              <el-input v-model="fromData.passWord" clearable type="password" show-password
+                        :disabled="false_and_true_2"/>
+            </el-row>
           </el-form-item>
         </el-form>
         <template #footer>
+          <el-row>
+            <el-form-item label="忘記密碼" v-show="dialogVshowFindPassWord">
+              <el-button type="warning" @click="findPassword">查詢</el-button>
+            </el-form-item>
+            &emsp;
+            <el-form-item>
+              <el-text>{{ fPassword }}</el-text>
+            </el-form-item>
+          </el-row>
           <span>
-            <el-button link type="primary" @click="sure">確定</el-button>
-            <el-button link type="primary" @click="dialogFormVisible1 = false">取消</el-button>
+            <el-button type="primary" @click="sure">確定</el-button>
+            <el-button type="primary" @click="dialogFormVisible1 = false">取消</el-button>
           </span>
         </template>
       </el-dialog>
       <br>
       <div v-show="show">
-        <el-select v-model="rateName" placeholder="查詢幣別" filterable>
+        <el-select v-model="rateName" placeholder="選擇幣別" filterable style="width: 100%">
           <el-option
               v-for="item in tableDataName"
               :key="item.currency"
-              :label="item.currency +' '+ item.currencyName"
+              :label="'💰 '+ item.currency +' ➠ '+ item.currencyName +' ➡️ 國家 ➤ '+JSON.parse(item.currencyNation)"
               :value="item.currency"
               @click="inquiry"
           />
         </el-select>
         &emsp;
-        <el-button type="primary" @click="save_cur">存檔</el-button>
+        <el-text>選好幣別 ➠</el-text>
+        &emsp;
+        <el-button type="primary" @click="save_cur">確定</el-button>
       </div>
       <el-table :data="tableData" height="80px" border style="width: 100%">
         <el-empty/>
@@ -501,17 +558,17 @@ function depositMoneyORwithdrawMoney() {
         >
           <template #default="scope">
             <el-button
-                size="large"
-                link
+                plain
                 type="primary"
+                :disabled="showFunction"
                 @click.prevent="deposit(scope.row)"
             >存錢
             </el-button>
-            <br>
+            <br><br>
             <el-button
-                size="large"
-                link
+                plain
                 type="primary"
+                :disabled="showFunction"
                 @click.prevent="withdraw(scope.row)"
             >取錢
             </el-button>
@@ -520,11 +577,12 @@ function depositMoneyORwithdrawMoney() {
         <el-table-column
             prop="userNameId"
             label="客戶編號"
+            width="150px"
         />
         <el-table-column
             prop="userName"
             label="客戶名稱"
-            width="100%"
+            width="125px"
         />
         <el-table-column
             prop="cur_number"
@@ -534,7 +592,7 @@ function depositMoneyORwithdrawMoney() {
         <el-table-column
             prop="currency_name"
             label="幣別名稱"
-            width="100%"
+            width="150px"
         />
         <el-table-column
             prop=""
