@@ -143,12 +143,17 @@ function setDefaultDateRange() {
   defaultDateRange.value = [firstDayOfMonth, lastDayOfMonth]
 }
 
+PubSub.subscribe('index', function (msg, data) {
+  tableDataFindIns_del.value = []
+  tableData.value = []
+  activeName.value = '1'
+})
+
 const handleClick = (tab, event) => {
   // console.log(tab.paneName)
   switch (tab.paneName) {
     case "1":
-      tableDataFindIns_del.value = []
-      tableData.value = []
+      
       break
     case "2":
       setDefaultDateRange()
