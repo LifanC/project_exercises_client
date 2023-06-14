@@ -132,6 +132,8 @@ const tableData = ref([])
 const tableDataFindIns_del = ref([])
 const dialogFormVisible1 = ref(false)
 
+const totalAmount = ref(0)
+
 watch(defaultDateRange, (newValue) => {
   datePicker.value = newValue;
 });
@@ -153,7 +155,7 @@ const handleClick = (tab, event) => {
   // console.log(tab.paneName)
   switch (tab.paneName) {
     case "1":
-      
+
       break
     case "2":
       setDefaultDateRange()
@@ -175,6 +177,20 @@ function DatePickerEnd() {
   const month = date.getMonth() + 1
   const day = date.getDate()
   return `${year}/${month}/${day}`
+}
+
+function total_amount() {
+  axios({
+    method: 'get',
+    url: 'http://localhost:8080/function/total_amount',
+    params: {
+      DatePickerStart: DatePickerStart(),
+      DatePickerEnd: DatePickerEnd()
+    }
+  })
+      .then((response) => {
+        totalAmount.value = response.data
+      })
 }
 
 function findDatePicker() {
@@ -202,7 +218,7 @@ function findDatePicker() {
       .then((response) => {
         tableDataFindIns_del.value = response.data
       })
-
+  total_amount()
 }
 
 const setInputMoneyFrom = reactive({
@@ -213,11 +229,13 @@ const setInputMoneyFrom = reactive({
 })
 const a = ref()
 const b = ref()
+const c = ref()
 
 function openDialog(row) {
   dialogFormVisible1.value = true
   a.value = row.calendarDetails
   b.value = row.details
+  c.value = row.expense_and_income_name
   setInputMoneyFrom.calendarDetails = row.calendarDetails
   setInputMoneyFrom.ins_del_data_id = row.ins_del_data_id
   setInputMoneyFrom.expense_and_income_number = row.expense_and_income_number
@@ -235,8 +253,18 @@ function setTableData() {
       .then((response) => {
         setInputMoneyFrom.setInputMoney = 0
         dialogFormVisible1.value = false
-        tableDataFindIns_del.value = response.data
         if (datePicker.value.length > 0) {
+          axios({
+            method: 'get',
+            url: 'http://localhost:8080/function/findDatePicker1',
+            params: {
+              DatePickerStart: DatePickerStart(),
+              DatePickerEnd: DatePickerEnd()
+            }
+          })
+              .then((response) => {
+                tableDataFindIns_del.value = response.data
+              })
           axios({
             method: 'get',
             url: 'http://localhost:8080/function/findDatePicker',
@@ -248,6 +276,7 @@ function setTableData() {
               .then((response) => {
                 tableData.value = response.data
               })
+          total_amount()
         }
       })
 }
@@ -315,11 +344,20 @@ function setTableData() {
             </el-form-item>
             &emsp;
             <el-form-item>
-              <el-button type="primary" @click="findDatePicker">查詢</el-button>
+              <el-button plain type="primary" @click="findDatePicker">查詢</el-button>
+            </el-form-item>
+            &emsp;
+            <el-form-item>
+              <el-text size="large" type="warning">總金額 ➠ {{ totalAmount }} ＄</el-text>
             </el-form-item>
           </el-row>
           <el-row>
             <el-table :data="tableDataFindIns_del" height="100%" border style="width: 50%">
+              <el-table-column
+                  prop="calendarDetails"
+                  label="日期"
+                  width="150px"
+              />
               <el-table-column
                   prop="expense"
                   label="支出"
@@ -332,7 +370,7 @@ function setTableData() {
               />
               <el-table-column
                   prop="totleMoney"
-                  label="總金額"
+                  label="金額"
                   width="150px"
               />
               <el-table-column
@@ -346,14 +384,14 @@ function setTableData() {
             <el-table :data="tableData" height="500px" border style="width: 50%">
               <el-table-column
                   label="功能"
-                  width="100%"
+                  width="150px"
               >
                 <template #default="scope">
                   <el-button
-                      plain
+                      link
                       type="primary"
                       @click.prevent="openDialog(scope.row)"
-                  >修改
+                  >修改金額
                   </el-button>
                 </template>
               </el-table-column>
@@ -415,7 +453,7 @@ function setTableData() {
 
   <el-dialog v-model="dialogFormVisible1" title="修改金額" width="500px">
     <el-form :model="setInputMoneyFrom">
-      <el-row>日期 : {{ a }}&emsp;內容 : {{ b }}</el-row>
+      <el-row><h1>類型 : {{ c }}&emsp;日期 : {{ a }}&emsp;內容 : {{ b }}</h1></el-row>
       <br>
       <el-row>
         <el-form-item>
@@ -424,12 +462,13 @@ function setTableData() {
           />
         </el-form-item>
       </el-row>
-      <el-row>
-        <el-form-item>
-          <el-button type="primary" @click="setTableData">確定</el-button>
-        </el-form-item>
-      </el-row>
     </el-form>
+    <template #footer>
+        <span>
+          <el-button type="primary" @click="setTableData">確定</el-button>
+          <el-button type="primary" @click="dialogFormVisible1 = false">取消</el-button>
+        </span>
+    </template>
   </el-dialog>
 
 </template>
