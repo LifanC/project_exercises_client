@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, onUnmounted, reactive, ref} from "vue";
+import {onMounted, onUnmounted, reactive, ref, watch} from "vue";
 import axios from "axios";
 
 const calendarValue = ref(new Date())
@@ -124,10 +124,24 @@ function del() {
 }
 
 const activeName = ref('1')
+
 const datePicker = ref([])
+const defaultDateRange = ref([]);
+
 const tableData = ref([])
 const tableDataFindIns_del = ref([])
 const dialogFormVisible1 = ref(false)
+
+watch(defaultDateRange, (newValue) => {
+  datePicker.value = newValue;
+});
+
+function setDefaultDateRange() {
+  const currentDate = new Date()
+  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+  const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+  defaultDateRange.value = [firstDayOfMonth, lastDayOfMonth]
+}
 
 const handleClick = (tab, event) => {
   // console.log(tab.paneName)
@@ -135,6 +149,10 @@ const handleClick = (tab, event) => {
     case "1":
       tableDataFindIns_del.value = []
       tableData.value = []
+      break
+    case "2":
+      setDefaultDateRange()
+      break
   }
 }
 
@@ -165,7 +183,6 @@ function findDatePicker() {
       }
     })
         .then((response) => {
-          datePicker.value = []
           tableData.value = response.data
         })
   }
@@ -178,7 +195,6 @@ function findDatePicker() {
     }
   })
       .then((response) => {
-        datePicker.value = []
         tableDataFindIns_del.value = response.data
       })
 
@@ -215,9 +231,22 @@ function setTableData() {
         setInputMoneyFrom.setInputMoney = 0
         dialogFormVisible1.value = false
         tableDataFindIns_del.value = response.data
-        tableData.value = []
+        if (datePicker.value.length > 0) {
+          axios({
+            method: 'get',
+            url: 'http://localhost:8080/function/findDatePicker',
+            params: {
+              DatePickerStart: DatePickerStart(),
+              DatePickerEnd: DatePickerEnd()
+            }
+          })
+              .then((response) => {
+                tableData.value = response.data
+              })
+        }
       })
 }
+
 
 </script>
 

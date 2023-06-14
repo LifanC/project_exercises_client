@@ -65,7 +65,7 @@ function index() {
           U Bike 查詢
         </template>
         <el-menu-item index="2-1">
-          <el-text>YouBike2.0臺北市公共自行車即時資訊</el-text>
+          <el-text>YouBike2.0臺北市即時資訊</el-text>
         </el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="3">
