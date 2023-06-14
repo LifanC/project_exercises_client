@@ -251,7 +251,7 @@ function inquiry() {
  * 存幣別、匯率
  * */
 function save_cur() {
-  if(cField.value !== ''){
+  if (cField.value !== '') {
     showFunction.value = false
     axios({
       method: 'put',
@@ -421,22 +421,12 @@ function findPassword() {
   }
 }
 
-
 </script>
 
 <template>
   <el-divider/>
-  <el-container>
-    <el-header>
-      <el-menu
-          mode="horizontal"
-          @select="handleSelect"
-      >
-        <el-menu-item index="1">
-
-        </el-menu-item>
-      </el-menu>
-    </el-header>
+  <el-container class="layout-container-demo">
+    <el-header/>
     <el-main>
       <el-descriptions
           title="會員管理"
@@ -703,5 +693,7 @@ function findPassword() {
 </template>
 
 <style scoped>
-
+.layout-container-demo .el-header {
+  background-color: black;
+}
 </style>
