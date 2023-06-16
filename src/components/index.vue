@@ -59,6 +59,8 @@ function handle() {
   calendarDetails.value = calendar()
   visible.value = true
   dialogFormVisible.value = true
+  fromData.inputMoney = 0
+  fromData.details = ''
   // console.log(triggerRef.value.getBoundingClientRect())
   axios({
     method: 'get',
@@ -87,17 +89,19 @@ function ins() {
       expense_and_income_number: fromData.expense_and_income_number,
       inputMoney: fromData.inputMoney,
       details: fromData.details,
-      ins: '1'
+      insDel: '1'
     }
   })
       .then((response) => {
-        fromData.ex = response.data[0].ex
-        fromData.ex = ''
-        fromData.expense_and_income_number = 'A'
-        fromData.inputMoney = 0
-        fromData.details = ''
-        dialogFormVisible.value = false
-        ElMessage.success('成功新增')
+        if (typeof response.data[0] !== 'undefined') {
+          fromData.ex = response.data[0].ex
+          fromData.ex = ''
+          fromData.expense_and_income_number = 'A'
+          fromData.inputMoney = 0
+          fromData.details = ''
+          dialogFormVisible.value = false
+          ElMessage.success('成功新增')
+        }
       })
 }
 
@@ -112,14 +116,15 @@ function del() {
     data: {
       calendarDetails: calendar(),
       ex: fromData.ex,
-      del: '1'
+      insDel: '2'
     }
   })
       .then((response) => {
-        fromData.ex = response.data[0].ex
-        fromData.ex = ''
-        dialogFormVisible.value = false
-        ElMessage('成功清除')
+        if (typeof response.data[0] !== 'undefined') {
+          fromData.ex = response.data[0].ex
+          dialogFormVisible.value = false
+          ElMessage('成功清除')
+        }
       })
 }
 
@@ -159,6 +164,9 @@ const handleClick = (tab, event) => {
       break
     case "2":
       setDefaultDateRange()
+      break
+    case "3":
+
       break
   }
 }
@@ -436,8 +444,8 @@ function setTableData() {
         </el-radio-group>
       </el-form-item>
       <el-form-item label="金額">
-        <el-input-number
-            v-model="fromData.inputMoney"
+        <el-input
+            v-model.number="fromData.inputMoney"
         />
       </el-form-item>
       <el-form-item label="支出、收入內容">
@@ -453,12 +461,14 @@ function setTableData() {
 
   <el-dialog v-model="dialogFormVisible1" title="修改金額" width="500px">
     <el-form :model="setInputMoneyFrom">
-      <el-row><h1>類型 : {{ c }}&emsp;日期 : {{ a }}&emsp;內容 : {{ b }}</h1></el-row>
+      <el-text size="large" type="danger"><h1>日期 : {{ a }}</h1></el-text>
+      <el-text size="large"><p>類型 : {{ c }}<br>內容 : {{ b }}</p></el-text>
       <br>
       <el-row>
         <el-form-item>
-          <el-input-number
-              v-model="setInputMoneyFrom.setInputMoney"
+          <el-input
+              v-model.number="setInputMoneyFrom.setInputMoney"
+              clearable
           />
         </el-form-item>
       </el-row>
