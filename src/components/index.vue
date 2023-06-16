@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, onUnmounted, reactive, ref, watch} from "vue";
+import {h, onMounted, onUnmounted, reactive, ref, watch} from "vue";
 import axios from "axios";
 
 const calendarValue = ref(new Date())
@@ -289,6 +289,24 @@ function setTableData() {
       })
 }
 
+function confirmEvent(row) {
+  axios({
+    method: 'delete',
+    url: 'http://localhost:8080/function/del',
+    data: row
+  })
+      .then((response) => {
+        ElNotification.success({
+          duration: 0,
+          position: 'top-left',
+          message: h('h3', null, [
+            h('span', null, '刪除成功 '),
+            h('i', { style: 'color: teal' }, '請重新查詢!!'),
+          ]),
+        })
+      })
+}
+
 
 </script>
 
@@ -401,6 +419,17 @@ function setTableData() {
                       @click.prevent="openDialog(scope.row)"
                   >修改金額
                   </el-button>
+                  <el-popconfirm
+                      width="220"
+                      confirm-button-text="確定"
+                      cancel-button-text="取消"
+                      title="確定要刪除嗎?"
+                      @confirm="confirmEvent(scope.row)"
+                  >
+                    <template #reference>
+                      <el-button link type="primary">刪除資料</el-button>
+                    </template>
+                  </el-popconfirm>
                 </template>
               </el-table-column>
               <el-table-column
