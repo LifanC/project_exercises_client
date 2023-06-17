@@ -297,13 +297,13 @@ function confirmEvent(row) {
   })
       .then((response) => {
         ElNotification.success({
-          duration: 0,
           position: 'top-left',
           message: h('h3', null, [
             h('span', null, '刪除成功 '),
             h('i', { style: 'color: teal' }, '請重新查詢!!'),
           ]),
         })
+        findDatePicker()
       })
 }
 
