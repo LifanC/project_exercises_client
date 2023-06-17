@@ -39,6 +39,11 @@ onUnmounted(() => {
   document.removeEventListener('mousemove', mousemoveHandler)
 })
 
+const calendarHeader = ref()
+const selectDate = (val) => {
+  calendarHeader.value.selectDate(val)
+}
+
 function calendar() {
   const date = calendarValue.value
   const year = date.getFullYear()
@@ -300,7 +305,7 @@ function confirmEvent(row) {
           position: 'top-left',
           message: h('h3', null, [
             h('span', null, '刪除成功 '),
-            h('i', { style: 'color: teal' }, '請重新查詢!!'),
+            h('i', {style: 'color: teal'}, '請重新查詢!!'),
           ]),
         })
         findDatePicker()
@@ -343,7 +348,22 @@ function confirmEvent(row) {
                 </el-tooltip>
                 <el-calendar v-model="calendarValue"
                              @click="handle"
+                             ref="calendarHeader"
                 >
+                  <template #header="{ date }">
+                    <span>{{ date }}</span>
+                    <el-button-group>
+                      <el-button size="small" @click="selectDate('prev-month')">
+                        上個月 : 1號
+                      </el-button>
+                      <el-button size="small" @click="selectDate('today')">
+                        今天
+                      </el-button>
+                      <el-button size="small" @click="selectDate('next-month')">
+                        下個月 : 1號
+                      </el-button>
+                    </el-button-group>
+                  </template>
                   <template #date-cell="{ data }">
                     <el-text :class="data.isSelected ? 'is-selected' : ''">
                       {{ data.day.split('-').slice(1).join('/') }}
