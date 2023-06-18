@@ -171,7 +171,7 @@ const handleClick = (tab, event) => {
       setDefaultDateRange()
       break
     case "3":
-
+      C()
       break
   }
 }
@@ -311,6 +311,110 @@ function confirmEvent(row) {
         findDatePicker()
       })
 }
+
+/**
+ * Java
+ * */
+const tableA = ref([])
+const tableB = ref([])
+const tableC = ref([])
+
+function A() {
+  fetch('http://localhost:8080/JavaExercise/A', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      a: fromDataJava.a,
+      b: ''
+    })
+  })
+      .then((response) => {
+        return response.json()
+      })
+      .then((result) => {
+        fromDataJava.a = ''
+        fromDataJava.b = ''
+        let v = []
+        for (let i=0;i<result.length;i++){
+          v.push(result[i])
+        }
+        v.sort()
+        tableA.value = v
+      })
+}
+
+function B() {
+  fetch('http://localhost:8080/JavaExercise/B', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      b: fromDataJava.b,
+      a: ''
+    })
+  })
+      .then((response) => {
+        return response.json()
+      })
+      .then((result) => {
+        fromDataJava.a = ''
+        fromDataJava.b = ''
+        let v = []
+        for (let i=0;i<result.length;i++){
+          v.push(result[i])
+        }
+        v.sort()
+        tableB.value = v
+      })
+}
+
+function C() {
+  A()
+  B()
+  fetch('http://localhost:8080/JavaExercise/C', {
+    method: 'GET'
+  })
+      .then((response) => {
+        return response.json()
+      })
+      .then((result) => {
+        fromDataJava.a = ''
+        fromDataJava.b = ''
+        let v = []
+        for (let i=0;i<result.length;i++){
+          v.push(result[i])
+        }
+        v.sort()
+        tableC.value = v
+      })
+}
+
+function D() {
+  fetch('http://localhost:8080/JavaExercise/D', {
+    method: 'GET'
+  })
+      .then((response) => {
+        return response.json()
+      })
+      .then((result) => {
+        fromDataJava.a = ''
+        fromDataJava.b = ''
+        let v = []
+        for (let i=0;i<result.length;i++){
+          v.push(result[i])
+        }
+        v.sort()
+        tableC.value = v
+      })
+}
+
+const fromDataJava = reactive({
+  a: '',
+  b: '',
+})
 
 
 </script>
@@ -474,7 +578,75 @@ function confirmEvent(row) {
             </el-table>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane label="功能3" name="3">C</el-tab-pane>
+        <el-tab-pane label="Java多執行緒、Redis" name="3">
+          <el-container>
+            <el-form v-model="fromDataJava">
+              <el-descriptions
+                  direction="vertical"
+                  :column="4"
+                  border
+                  style="width: 600px;"
+              >
+                <el-descriptions-item label="A區">
+                  <el-input v-model="fromDataJava.a"/>
+                  <br>
+                  <el-button style="width: 100%;height: 50px" plain type="warning" @click="A">暫存資料</el-button>
+                </el-descriptions-item>
+                <el-descriptions-item label="B區">
+                  <el-input v-model="fromDataJava.b"/>
+                  <br>
+                  <el-button style="width: 100%;height: 50px" plain type="warning" @click="B">暫存資料</el-button>
+                </el-descriptions-item>
+                <el-descriptions-item label="功能">
+                  <el-button style="width: 100%;height: 100px" link type="success" @click="C">全部資料</el-button>
+                </el-descriptions-item>
+                <el-descriptions-item label="刪除">
+                  <el-button style="width: 100%;height: 100px" link type="danger" @click="D">刪除全部資料</el-button>
+                </el-descriptions-item>
+              </el-descriptions>
+            </el-form>
+          </el-container>
+          <el-descriptions
+              direction="vertical"
+              :column="3"
+              border
+              style="width: 600px;height: 500px;"
+          >
+            <el-descriptions-item label="(1)">
+              <div class="custom-width">
+                <el-table :data="tableA" border style="width: 100%;">
+                  <el-table-column label="A暫存資料">
+                    <template #default="scope">
+                      {{ scope.row }}
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="(2)">
+              <div class="custom-width">
+                <el-table :data="tableB" border style="width: 100%;">
+                  <el-table-column label="B暫存資料">
+                    <template #default="scope">
+                      {{ scope.row }}
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="(3)">
+              <div class="custom-width">
+                <el-table :data="tableC" border style="width: 100%;">
+                  <el-table-column label="全部資料">
+                    <template #default="scope">
+                      {{ scope.row }}
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-tab-pane>
         <el-tab-pane label="功能4" name="4">D</el-tab-pane>
         <el-tab-pane label="功能5" name="5">E</el-tab-pane>
       </el-tabs>
@@ -547,5 +719,9 @@ function confirmEvent(row) {
   align-items: center;
   height: 100%;
   right: 20px;
+}
+
+.custom-width {
+  width: 100px;
 }
 </style>

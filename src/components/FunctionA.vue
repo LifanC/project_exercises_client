@@ -43,8 +43,14 @@ const fromData = reactive({
 
 PubSub.subscribe('main', function (msg, data) {
   //['6', true、false]
-  sign_out_dialog()
-  show.value = false
+  switch (data[0]) {
+    case '6':
+      if (data[1]) {
+        sign_out_dialog()
+        show.value = false
+      }
+      break
+  }
 })
 
 const handleSelect = (key, keyPath) => {
