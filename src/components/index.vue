@@ -338,6 +338,7 @@ function A_clear() {
 function A() {
   if (a_arr.value.length > 0) {
     ElMessage.success('新增成功')
+    tableA.value = []
     fetch('http://localhost:8080/JavaExercise/A', {
       method: 'POST',
       headers: {
@@ -382,6 +383,7 @@ function B_clear() {
 function B() {
   if (b_arr.value.length > 0) {
     ElMessage.success('新增成功')
+    tableB.value = []
     fetch('http://localhost:8080/JavaExercise/B', {
       method: 'POST',
       headers: {
@@ -438,6 +440,10 @@ function D() {
       .then((response) => {
         fromDataJava.a = ''
         fromDataJava.b = ''
+        ElMessage.error('刪除成功')
+        tableA.value = []
+        tableB.value = []
+        tableC.value = []
       })
 }
 
