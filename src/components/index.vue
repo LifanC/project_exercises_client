@@ -390,8 +390,6 @@ function D() {
       .then((result) => {
         fromDataJava.a = ''
         fromDataJava.b = ''
-        result.sort()
-        tableC.value = result
       })
 }
 
