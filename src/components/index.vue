@@ -171,7 +171,7 @@ const handleClick = (tab, event) => {
       setDefaultDateRange()
       break
     case "3":
-      C()
+
       break
   }
 }
@@ -318,17 +318,45 @@ function confirmEvent(row) {
 const tableA = ref([])
 const tableB = ref([])
 const tableC = ref([])
+const a_arr = ref([])
+const b_arr = ref([])
+const fromDataJava = reactive({
+  a: '',
+  b: '',
+})
+
+function A_array() {
+  a_arr.value.push(fromDataJava.a)
+  tableA.value = a_arr.value
+}
+
+function A_clear() {
+  a_arr.value = []
+  tableA.value = a_arr.value
+}
 
 function A() {
-  fetch('http://localhost:8080/JavaExercise/A', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      a: fromDataJava.a,
-      b: ''
+  if (a_arr.value.length > 0) {
+    ElMessage.success('新增成功')
+    fetch('http://localhost:8080/JavaExercise/A', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        a: a_arr.value,
+        b: []
+      })
     })
+        .then((response) => {
+
+        })
+  }
+}
+
+function A_show() {
+  fetch('http://localhost:8080/JavaExercise/A_show', {
+    method: 'GET'
   })
       .then((response) => {
         return response.json()
@@ -341,16 +369,38 @@ function A() {
       })
 }
 
+function B_array() {
+  b_arr.value.push(fromDataJava.b)
+  tableB.value = b_arr.value
+}
+
+function B_clear() {
+  b_arr.value = []
+  tableB.value = b_arr.value
+}
+
 function B() {
-  fetch('http://localhost:8080/JavaExercise/B', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      b: fromDataJava.b,
-      a: ''
+  if (b_arr.value.length > 0) {
+    ElMessage.success('新增成功')
+    fetch('http://localhost:8080/JavaExercise/B', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        a: [],
+        b: b_arr.value
+      })
     })
+        .then((response) => {
+
+        })
+  }
+}
+
+function B_show() {
+  fetch('http://localhost:8080/JavaExercise/B_show', {
+    method: 'GET'
   })
       .then((response) => {
         return response.json()
@@ -364,8 +414,6 @@ function B() {
 }
 
 function C() {
-  A()
-  B()
   fetch('http://localhost:8080/JavaExercise/C', {
     method: 'GET'
   })
@@ -373,6 +421,9 @@ function C() {
         return response.json()
       })
       .then((result) => {
+        if(result.length === 0){
+          ElMessage.info('目前沒資料')
+        }
         fromDataJava.a = ''
         fromDataJava.b = ''
         result.sort()
@@ -385,18 +436,10 @@ function D() {
     method: 'GET'
   })
       .then((response) => {
-        return response.json()
-      })
-      .then((result) => {
         fromDataJava.a = ''
         fromDataJava.b = ''
       })
 }
-
-const fromDataJava = reactive({
-  a: '',
-  b: '',
-})
 
 
 </script>
@@ -569,21 +612,37 @@ const fromDataJava = reactive({
                   border
                   style="width: 600px;"
               >
-                <el-descriptions-item label="A區">
+                <el-descriptions-item label="A區 : 暫存資料">
                   <el-input v-model="fromDataJava.a"/>
                   <br>
-                  <el-button style="width: 100%;height: 50px" plain type="warning" @click="A">暫存資料</el-button>
+                  <el-button style="width: 100%;height: 50px" plain type="primary" @click="A_array">儲存暫時資料</el-button>
+                  <br>
+                  <el-button style="width: 100%;height: 50px" plain type="danger" @click="A_clear">清除暫時資料</el-button>
+                  <br>
+                  <el-button style="width: 100%;height: 50px" plain type="default" @click="A">確定送出資料</el-button>
+                  <br>
+                  <el-button style="width: 100%;height: 50px" plain type="warning" @click="A_show">
+                    顯示確定送出的資料
+                  </el-button>
                 </el-descriptions-item>
-                <el-descriptions-item label="B區">
+                <el-descriptions-item label="B區 : 暫存資料">
                   <el-input v-model="fromDataJava.b"/>
                   <br>
-                  <el-button style="width: 100%;height: 50px" plain type="warning" @click="B">暫存資料</el-button>
+                  <el-button style="width: 100%;height: 50px" plain type="primary" @click="B_array">儲存暫時資料</el-button>
+                  <br>
+                  <el-button style="width: 100%;height: 50px" plain type="danger" @click="B_clear">清除暫時資料</el-button>
+                  <br>
+                  <el-button style="width: 100%;height: 50px" plain type="default" @click="B">確定送出資料</el-button>
+                  <br>
+                  <el-button style="width: 100%;height: 50px" plain type="warning" @click="B_show">
+                    顯示確定送出的資料
+                  </el-button>
                 </el-descriptions-item>
                 <el-descriptions-item label="功能">
-                  <el-button style="width: 100%;height: 100px" link type="success" @click="C">全部資料</el-button>
+                  <el-button style="width: 100%;height: 200px" link type="success" @click="C">全部資料</el-button>
                 </el-descriptions-item>
                 <el-descriptions-item label="刪除">
-                  <el-button style="width: 100%;height: 100px" link type="danger" @click="D">刪除全部資料</el-button>
+                  <el-button style="width: 100%;height: 200px" link type="danger" @click="D">刪除全部資料</el-button>
                 </el-descriptions-item>
               </el-descriptions>
             </el-form>
@@ -596,7 +655,7 @@ const fromDataJava = reactive({
           >
             <el-descriptions-item label="(1)">
               <div class="custom-width">
-                <el-table :data="tableA" border style="width: 100%;">
+                <el-table :data="tableA" border style="height: 450px;">
                   <el-table-column label="A暫存資料">
                     <template #default="scope">
                       {{ scope.row }}
@@ -607,7 +666,7 @@ const fromDataJava = reactive({
             </el-descriptions-item>
             <el-descriptions-item label="(2)">
               <div class="custom-width">
-                <el-table :data="tableB" border style="width: 100%;">
+                <el-table :data="tableB" border style="height: 450px;">
                   <el-table-column label="B暫存資料">
                     <template #default="scope">
                       {{ scope.row }}
@@ -618,7 +677,7 @@ const fromDataJava = reactive({
             </el-descriptions-item>
             <el-descriptions-item label="(3)">
               <div class="custom-width">
-                <el-table :data="tableC" border style="width: 100%;">
+                <el-table :data="tableC" border style="height: 450px;">
                   <el-table-column label="全部資料">
                     <template #default="scope">
                       {{ scope.row }}
@@ -704,6 +763,6 @@ const fromDataJava = reactive({
 }
 
 .custom-width {
-  width: 100px;
+  width: 250px;
 }
 </style>
