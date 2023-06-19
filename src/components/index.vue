@@ -336,12 +336,8 @@ function A() {
       .then((result) => {
         fromDataJava.a = ''
         fromDataJava.b = ''
-        let v = []
-        for (let i=0;i<result.length;i++){
-          v.push(result[i])
-        }
-        v.sort()
-        tableA.value = v
+        result.sort()
+        tableA.value = result
       })
 }
 
@@ -362,12 +358,8 @@ function B() {
       .then((result) => {
         fromDataJava.a = ''
         fromDataJava.b = ''
-        let v = []
-        for (let i=0;i<result.length;i++){
-          v.push(result[i])
-        }
-        v.sort()
-        tableB.value = v
+        result.sort()
+        tableB.value = result
       })
 }
 
@@ -383,12 +375,8 @@ function C() {
       .then((result) => {
         fromDataJava.a = ''
         fromDataJava.b = ''
-        let v = []
-        for (let i=0;i<result.length;i++){
-          v.push(result[i])
-        }
-        v.sort()
-        tableC.value = v
+        result.sort()
+        tableC.value = result
       })
 }
 
@@ -402,12 +390,8 @@ function D() {
       .then((result) => {
         fromDataJava.a = ''
         fromDataJava.b = ''
-        let v = []
-        for (let i=0;i<result.length;i++){
-          v.push(result[i])
-        }
-        v.sort()
-        tableC.value = v
+        result.sort()
+        tableC.value = result
       })
 }
 
