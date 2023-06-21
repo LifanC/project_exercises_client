@@ -10,7 +10,10 @@ PubSub.subscribe('main', function (msg, data) {
     case '2':
       if (data[1]) {
         uBikeSubmit()
-        setTimeout(()=>{getOnlyList()},500)
+        setTimeout(() => {
+          getOnlyList()
+        }, 500)
+
         return show.value = true
       } else if (!data[1]) {
         return show.value = false
@@ -28,6 +31,7 @@ const sareas = ref([])
 const sareasArr = ref([])
 const ar = ref([])
 const arArr = ref([])
+const loading = ref(true)
 
 
 function uBikeSubmit() {
@@ -60,17 +64,18 @@ function getOnlyList() {
       ar: fromData.ar
     }
   }).then((res) => {
+    loading.value = false
     tableData.value = res.data
-    setTimeout(()=>{
+    setTimeout(() => {
       fromData.ar = ''
-    },1000)
+    }, 1000)
     getOnlyLists()
   })
 }
 
-function getOnlyLists(){
-  ar.value.splice(0,ar.value.length)
-  arArr.value.splice(0,arArr.value.length)
+function getOnlyLists() {
+  ar.value.splice(0, ar.value.length)
+  arArr.value.splice(0, arArr.value.length)
   axios.get('http://localhost:8080/getOnlyLists', {
     params: {
       sarea: fromData.sarea
@@ -112,7 +117,7 @@ function getOnlyLists(){
       />
     </el-select>
     <el-divider/>
-    <el-table :data="tableData" height="500px" border style="width: 100%">
+    <el-table v-loading="loading" :data="tableData" height="500px" border style="width: 100%">
       <el-table-column
           prop="sno"
           label="編號"

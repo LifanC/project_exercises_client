@@ -8,38 +8,19 @@ const exampleAndexplain = ref(true)
 const elTableHeight = ref(100)
 
 const fromData = reactive({
-  english: null,
-  englishAdd: null,
-  chinese: null,
-  chineseAdd: null,
-  example: null,
-  explain: null,
+  english: '',
+  englishAdd: '',
+  chinese: '',
+  chineseAdd: '',
+  example: '',
+  explain: '',
   toeicId: null,
-  dialogEnglish: null,
-  dialogChinese: null,
-  dialogExample: null,
-  dialogExplain: null,
-  queryEnglish: null,
+  dialogEnglish: '',
+  dialogChinese: '',
+  dialogExample: '',
+  dialogExplain: '',
+  queryEnglish: '',
 })
-const rules = reactive({
-  english: [{required: true, message: '請輸入英文單字', trigger: 'blur'}],
-  chinese: [{required: true, message: '請輸入中文翻譯', trigger: 'blur'}],
-  example: [{required: true, message: '請輸入英文例句', trigger: 'blur'}],
-  explain: [{required: true, message: '請輸入中文例句翻譯', trigger: 'blur'}],
-})
-
-const rulesAdd = reactive({
-  englishAdd: [{required: true, message: '請輸入英文單字', trigger: 'blur'}],
-  chineseAdd: [{required: true, message: '請輸入中文翻譯', trigger: 'blur'}],
-})
-
-const dialogRules = reactive({
-  dialogEnglish: [{required: true, message: '請輸入英文單字', trigger: 'blur'}],
-  dialogChinese: [{required: true, message: '請輸入中文翻譯', trigger: 'blur'}],
-})
-
-const ruleForm = ref(null)
-const ruleFormAdd = ref(null)
 
 
 PubSub.subscribe('main', function (msg, data) {
@@ -56,98 +37,37 @@ PubSub.subscribe('main', function (msg, data) {
 })
 
 function toeicWords() {
-  axios.get('http://localhost:8080/toeicWords').then((res) => {
-    tableData.value = res.data
-  })
+  axios.get('http://localhost:8080/toeic/toeicWords')
+      .then((response) => {
+        if (response.data.length === 0) {
+          exampleAndexplain.value = false
+        } else {
+          exampleAndexplain.value = true
+        }
+        elTableHeight.value = 100
+        tableData.value = response.data
+      })
 }
 
 function fromSubmit() {
-  if (!ruleFormAdd) return
-  ruleFormAdd.value.validate((valid) => {
-    if (valid) {
-      axios({
-        method: 'post',
-        url: 'http://localhost:8080/toeicFromSubmit',
-        data: {
-          english: fromData.englishAdd,
-          chinese: fromData.chineseAdd
-        }
-      }).then((res) => {
-        ElMessage({
-          message: '成功',
-          grouping: true,
-          type: 'success',
-        })
-        fromData.englishAdd = null
-        fromData.chineseAdd = null
-      })
-    } else {
-      ElMessage({
-        message: '請勿空白',
-        grouping: true,
-        type: 'error',
-      })
-      return false
+  axios({
+    method: 'post',
+    url: 'http://localhost:8080/toeic/toeicFromSubmit',
+    data: {
+      english: fromData.englishAdd
     }
+  }).then((response) => {
+    ElMessage({
+      message: '成功',
+      grouping: true,
+      type: 'success',
+    })
+    fromData.englishAdd = null
+    fromData.chineseAdd = null
   })
 }
 
 const dialogFormVisible = ref(false)
-
-function fromSubmitEx() {
-  if(!fromData.queryEnglish){
-    if (!ruleForm) return
-    ruleForm.value.validate((valid) => {
-      if (valid) {
-        ElMessageBox.confirm(
-            `確定要 新增 嗎?`,
-            {
-              confirmButtonText: '確定',
-              cancelButtonText: '取消',
-              type: 'info',
-            }
-        )
-            .then(() => {
-              axios({
-                method: 'put',
-                url: 'http://localhost:8080/toeicFromSubmitEx/'
-                    + fromData.example + '/'
-                    + fromData.explain
-              }).then((res) => {
-                tableData.value = res.data
-                ElMessage({
-                  message: '成功',
-                  grouping: true,
-                  type: 'success',
-                })
-                fromData.example = null
-                fromData.explain = null
-              })
-            })
-            .catch(() => {
-              ElMessage({
-                message: '取消',
-                grouping: true,
-                type: 'error',
-              })
-            })
-      } else {
-        ElMessage({
-          message: '請勿空白',
-          grouping: true,
-          type: 'error',
-        })
-        return false
-      }
-    })
-  }else{
-    ElMessage({
-      message: '查詢單字 請清空',
-      grouping: true,
-      type: 'error',
-    })
-  }
-}
 
 function editRow(row) {
   dialogFormVisible.value = true
@@ -163,52 +83,77 @@ function queryExample(row) {
 }
 
 function setData() {
-  if (!ruleForm) return
-  ruleForm.value.validate((valid) => {
-    if (valid) {
-      axios({
-        method: 'put',
-        url: 'http://localhost:8080/setData/'
-            + fromData.toeicId + '/'
-            + fromData.dialogEnglish + '/'
-            + fromData.dialogChinese + '/'
-            + fromData.dialogExample + '/'
-            + fromData.dialogExplain
-      }).then((res) => {
-        ElMessage({
-          message: '成功',
-          grouping: true,
-          type: 'success',
-        })
-        tableData.value = res.data
-        dialogFormVisible.value = false
-      })
-    } else {
+  if (fromData.dialogEnglish !== '') {
+    axios({
+      method: 'put',
+      url: 'http://localhost:8080/toeic/setData',
+      data: {
+        toeicId: fromData.toeicId,
+        english: fromData.dialogEnglish,
+        chinese: fromData.dialogChinese,
+        example: fromData.dialogExample,
+        explain: fromData.dialogExplain
+      }
+    }).then((response) => {
       ElMessage({
-        message: '請勿空白',
+        message: '成功',
         grouping: true,
-        type: 'error',
+        type: 'success',
       })
-      return false
-    }
-  })
+      tableData.value = response.data
+      dialogFormVisible.value = false
+    })
+  } else {
+    ElMessage({
+      message: '英文單字，請勿空白',
+      grouping: true,
+      type: 'error',
+    })
+  }
 }
 
 function queryToeicWords() {
-  if(!fromData.queryEnglish){
+  if (!fromData.queryEnglish) {
     exampleAndexplain.value = true
     elTableHeight.value = 100
-  }else{
+  } else {
     exampleAndexplain.value = false
     elTableHeight.value = 500
   }
-  axios.get('http://localhost:8080/queryToeicWords', {
+  axios.get('http://localhost:8080/toeic/queryToeicWords', {
     params: {
       english: fromData.queryEnglish
     }
-  }).then((res) => {
-    tableData.value = res.data
+  }).then((response) => {
+    tableData.value = response.data
   })
+}
+
+const tf = ref(true)
+
+function inputEn() {
+  if (fromData.englishAdd !== '') {
+    axios.get('http://localhost:8080/toeic/tf', {
+      params: {
+        english: fromData.englishAdd
+      }
+    })
+        .then((response) => {
+          tf.value = response.data
+          if (response.data) {
+            ElMessage.error('單字重複')
+          }
+        })
+  }
+}
+
+function all() {
+  axios.get('http://localhost:8080/toeic/all')
+      .then((response) => {
+        exampleAndexplain.value = false
+        elTableHeight.value = 500
+        tableData.value = response.data
+      })
 }
 
 
@@ -219,37 +164,38 @@ function queryToeicWords() {
     <el-divider/>
     <el-row>
       <el-container>
-        <el-form :model="fromData" :rules="rulesAdd" ref="ruleFormAdd">
+        <el-form :model="fromData">
           <el-row>
-            <el-form-item label="英文單字" prop="englishAdd">
-              <el-input v-model="fromData.englishAdd"/>
-            </el-form-item>
             &emsp;
-            <el-form-item label="中文翻譯" prop="chineseAdd">
-              <el-input v-model="fromData.chineseAdd"/>
+            <el-form-item label="新增英文單字" prop="englishAdd">
+              <el-input v-model="fromData.englishAdd" @input="inputEn" clearable/>
             </el-form-item>
             &emsp;
             <el-form-item>
-              <el-button type="primary" @click="fromSubmit(ruleForm)">新增資料</el-button>
+              <el-button :disabled="tf" plain type="primary" @click="fromSubmit">確定</el-button>
             </el-form-item>
           </el-row>
         </el-form>
       </el-container>
     </el-row>
-    <el-divider/>
-    <el-row>
-      <el-container>
-        <el-form :model="fromData">
+    <el-container>
+      <el-form :model="fromData">
+        <el-row>
+          &emsp;
+          <el-form-item label="查詢單字">
+            <el-button link type="primary" @click="all">全部</el-button>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          &emsp;
           <el-form-item label="查詢單字">
             <el-input @input="queryToeicWords" v-model="fromData.queryEnglish" clearable/>
           </el-form-item>
-        </el-form>
-      </el-container>
-    </el-row>
-    <el-divider/>
-    <el-text>隨機單字</el-text>
+        </el-row>
+      </el-form>
+    </el-container>
     <el-table :data="tableData" :height="elTableHeight" border>
-      <el-table-column width="80px">
+      <el-table-column width="100px" label="隨機單字">
         <template #default="scope">
           <el-button
               link type="primary"
@@ -283,36 +229,16 @@ function queryToeicWords() {
           label="中文例句翻譯"
       />
     </el-table>
-    <div v-show="exampleAndexplain">
-      <el-row>
-        <el-container>
-          <el-form :model="fromData" :rules="rules" ref="ruleForm">
-            <el-row>
-              <el-form-item label="新增英文例句" prop="example">
-                <el-input v-model="fromData.example" type="textarea" style="width: 500px"/>
-              </el-form-item>
-              &emsp;
-              <el-form-item label="新增中文例句翻譯" prop="explain">
-                <el-input v-model="fromData.explain" type="textarea" style="width: 500px"/>
-              </el-form-item>
-              &emsp;
-              <el-form-item>
-                <el-button type="primary" @click="fromSubmitEx(ruleForm)">新增資料</el-button>
-              </el-form-item>
-            </el-row>
-          </el-form>
-        </el-container>
-      </el-row>
-    </div>
+
     <el-dialog v-model="dialogFormVisible" title="修改資料">
       <el-container>
-        <el-form :model="fromData" :rules="dialogRules" ref="ruleForm">
+        <el-form :model="fromData">
           <el-row>
-            <el-form-item label="英文單字" prop="dialogEnglish" required>
+            <el-form-item label="英文單字" prop="dialogEnglish">
               <el-input v-model="fromData.dialogEnglish"/>
             </el-form-item>
             &emsp;
-            <el-form-item label="中文翻譯" prop="dialogChinese" required>
+            <el-form-item label="中文翻譯" prop="dialogChinese">
               <el-input v-model="fromData.dialogChinese"/>
             </el-form-item>
           </el-row>
