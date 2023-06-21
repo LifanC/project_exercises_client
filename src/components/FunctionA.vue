@@ -76,6 +76,7 @@ function register_dialog() {
  * 登入
  * */
 function login_dialog() {
+  fPassword.value = ''
   dialogVshowFindPassWord.value = true
   dialogFormVisible1.value = true
   fromData.userName = ''
@@ -424,6 +425,8 @@ function findPassword() {
         .then((response) => {
           fPassword.value = response.data
         })
+  } else {
+    fPassword.value = 'UserName 請勿空白'
   }
 }
 
