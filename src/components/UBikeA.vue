@@ -12,7 +12,7 @@ PubSub.subscribe('main', function (msg, data) {
         uBikeSubmit()
         setTimeout(() => {
           getOnlyList()
-        }, 500)
+        }, 3000)
 
         return show.value = true
       } else if (!data[1]) {
