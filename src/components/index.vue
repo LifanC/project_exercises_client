@@ -249,6 +249,7 @@ function openDialog(row) {
   a.value = row.calendarDetails
   b.value = row.details
   c.value = row.expense_and_income_name
+  setInputMoneyFrom.setInputMoney = row.inputMoney
   setInputMoneyFrom.calendarDetails = row.calendarDetails
   setInputMoneyFrom.ins_del_data_id = row.ins_del_data_id
   setInputMoneyFrom.expense_and_income_number = row.expense_and_income_number
