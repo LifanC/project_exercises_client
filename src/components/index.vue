@@ -169,6 +169,9 @@ const handleClick = (tab, event) => {
       break
     case "2":
       setDefaultDateRange()
+        setTimeout(()=>{
+          findDatePicker()
+        },500)
       break
     case "3":
 
@@ -207,31 +210,37 @@ function total_amount() {
 }
 
 function findDatePicker() {
-  if (datePicker.value.length > 0) {
+  if(datePicker.value !== null){
+    if (datePicker.value.length > 0) {
+      axios({
+        method: 'get',
+        url: 'http://localhost:8080/function/findDatePicker',
+        params: {
+          DatePickerStart: DatePickerStart(),
+          DatePickerEnd: DatePickerEnd()
+        }
+      })
+          .then((response) => {
+            tableData.value = response.data
+          })
+    }
     axios({
       method: 'get',
-      url: 'http://localhost:8080/function/findDatePicker',
+      url: 'http://localhost:8080/function/findIns_del',
       params: {
         DatePickerStart: DatePickerStart(),
         DatePickerEnd: DatePickerEnd()
       }
     })
         .then((response) => {
-          tableData.value = response.data
+          tableDataFindIns_del.value = response.data
         })
+    total_amount()
+  }else{
+    tableData.value = []
+    tableDataFindIns_del.value = []
+    totalAmount.value = 0
   }
-  axios({
-    method: 'get',
-    url: 'http://localhost:8080/function/findIns_del',
-    params: {
-      DatePickerStart: DatePickerStart(),
-      DatePickerEnd: DatePickerEnd()
-    }
-  })
-      .then((response) => {
-        tableDataFindIns_del.value = response.data
-      })
-  total_amount()
 }
 
 const setInputMoneyFrom = reactive({
